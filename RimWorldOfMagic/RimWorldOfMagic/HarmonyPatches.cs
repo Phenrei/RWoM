@@ -846,17 +846,17 @@ namespace TorannMagic
             }
         }
 
-        [HarmonyPatch(typeof(ApparelUtility), "HasPartsToWear", null)]
-        public class BracersOfPacifist_Wear_Prevention
-        {
-            public static void Postfix(Pawn p, ThingDef apparel, ref bool __result)
-            {
-                if (p != null && p.story != null && !p.story.DisabledWorkTagsBackstoryAndTraits.HasFlag(WorkTags.Violent) && apparel == TorannMagicDefOf.TM_Artifact_BracersOfThePacifist)
-                {
-                    __result = false;
-                }
-            }
-        }
+        //[HarmonyPatch(typeof(ApparelUtility), "HasPartsToWear", null)]
+        //public class BracersOfPacifist_Wear_Prevention
+        //{
+        //    public static void Postfix(Pawn p, ThingDef apparel, ref bool __result)
+        //    {
+        //        if (p != null && p.story != null && !p.story.DisabledWorkTagsBackstoryAndTraits.HasFlag(WorkTags.Violent) && apparel == TorannMagicDefOf.TM_Artifact_BracersOfThePacifist)
+        //        {
+        //            __result = false;
+        //        }
+        //    }
+        //}
 
         [HarmonyPatch(typeof(WeatherEvent_LightningStrike), "FireEvent", null)]
         public class LightningStrike_DarkThunderstorm_Patch
