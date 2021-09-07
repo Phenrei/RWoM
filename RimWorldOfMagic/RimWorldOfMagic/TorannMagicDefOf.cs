@@ -138,6 +138,7 @@ namespace TorannMagic
         public static GameConditionDef ManaSurge;
         public static GameConditionDef DarkClouds;
         public static GameConditionDef DarkThunderstorm;
+        public static GameConditionDef TM_ManaStorm;
         public static HediffDef TM_ManaSickness;
         public static HediffDef TM_ArcaneSickness;
         public static HediffDef TM_ArcaneWeakness;
@@ -190,12 +191,11 @@ namespace TorannMagic
         //public static SitePartDef EnemyRaidOnArrival;
         public static SitePartDef ArcaneBanditSquad;
         //public static IncidentDef ArcaneEnemyRaid;
-        
+
         public static TraitDef TM_Gifted;
         public static TraitDef TM_OKWithDeath;
         public static TraitDef TM_ManaWellTD;
         public static TraitDef TM_ArcaneConduitTD;
-        
 
         //Wanderer
         public static TraitDef TM_Wanderer;
@@ -701,6 +701,9 @@ namespace TorannMagic
         public static PawnKindDef TM_SpiritWolf;
         public static ThingDef TM_SpiritWolfR;
 
+        //Golemancer
+        //public static TraitDef TM_Golemancer;
+
         //Shadow
         public static TraitDef TM_TheShadow;
 
@@ -1135,6 +1138,12 @@ namespace TorannMagic
         public static ThingDef Mote_SpiritWolf_West;
         public static ThingDef Mote_Healing_Small;
         public static ThingDef Mote_Base_Smoke;
+        public static ThingDef Mote_BlueSpireE;
+        public static ThingDef Mote_BlueSpireEs;
+        public static ThingDef Mote_BlueSpireWs;
+        public static ThingDef Mote_BlueSpireW;
+        public static ThingDef Mote_BlueSwirl;
+        public static ThingDef Mote_ManaVortex;
 
         public static ThingDef Projectile_FogOfTorment;        
 
@@ -1262,6 +1271,7 @@ namespace TorannMagic
         public static InspirationDef Frenzy_Go;
         public static InspirationDef Frenzy_Shoot;
         public static InspirationDef ID_Enlightened;
+        public static InspirationDef ID_ArcanePathways;
 
         //Mental States
         public static MentalStateDef TM_Berserk;
@@ -1300,6 +1310,8 @@ namespace TorannMagic
         public static ThoughtDef TM_NeedTravel;
         //public static ThoughtDef AteMysteryMeatDirect;
         //public static ThoughtDef AteMysteryMeatAsIngredient;
+        public static ThoughtDef TM_SeverMagic_ForApproveTD;
+        public static ThoughtDef TM_SeverMagic_ForVeneratedTD;
 
         //WeatherDefs
         public static WeatherDef TM_HealingRainWD;
@@ -1331,6 +1343,30 @@ namespace TorannMagic
 
         //HistoryEventDefs
         public static HistoryEventDef TM_OffensiveMagic;
+        public static HistoryEventDef TM_KilledMage;
+        public static HistoryEventDef TM_KilledFighter;
+        public static HistoryEventDef TM_UsedMagic;
+        public static HistoryEventDef TM_UsedManeuver;
+        public static HistoryEventDef TM_KilledHumanlike;
+        public static HistoryEventDef TM_SeverMagicEvent;
+        public static HistoryEventDef TM_BestowMagicEvent;
+        public static HistoryEventDef TM_BestowClassEvent;
+
+        //Rituals
+        public static JobDef TM_SeverMagic;
+        public static HediffDef TM_MagicSeverenceHD;
+        public static JobDef TM_BestowMagic;
+        public static HediffDef TM_BestowMagicClassHD;
+        public static JobDef TM_BestowClass;
+
+        //Precept Defs
+        public static PreceptDef TM_Mages_Abhorrent;
+        public static PreceptDef TM_Mages_Disapprove;
+        public static PreceptDef TM_Mages_Approve;
+        public static PreceptDef TM_Mages_Venerated;
+
+        //Precept Roles
+        public static PreceptDef TM_IdeoRole_VoidSeeker;
 
         //FleckDefs
         public static FleckDef ElectricalSpark;

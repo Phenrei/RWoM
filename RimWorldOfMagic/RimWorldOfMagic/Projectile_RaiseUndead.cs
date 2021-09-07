@@ -90,8 +90,11 @@ namespace TorannMagic
                                     }
 
                                     if (!wasVampire)
-                                    {
-                                        undeadPawn.SetFaction(pawn.Faction);
+                                    {                                        
+                                        if (undeadPawn.Faction != pawn.Faction)
+                                        {
+                                            undeadPawn.SetFaction(pawn.Faction);
+                                        }
                                         if (undeadPawn.Dead)
                                         {
                                             ResurrectionUtility.Resurrect(undeadPawn);
@@ -151,6 +154,10 @@ namespace TorannMagic
                                         }
                                         else if (undeadPawn.story != null && undeadPawn.story.traits != null && undeadPawn.needs != null && undeadPawn.playerSettings != null)
                                         {
+                                            if (ModsConfig.IdeologyActive && undeadPawn.guest != null)
+                                            {
+                                                undeadPawn.guest.SetGuestStatus(pawn.Faction, GuestStatus.Slave);
+                                            }
 
                                             CompAbilityUserMagic compMagic = undeadPawn.GetComp<CompAbilityUserMagic>();
                                             if (compMagic != null && TM_Calc.IsMagicUser(undeadPawn)) //(compMagic.IsMagicUser && !undeadPawn.story.traits.HasTrait(TorannMagicDefOf.Faceless)) || 
@@ -166,6 +173,7 @@ namespace TorannMagic
                                             }
                                             RemoveHediffsAddictionsAndPermanentInjuries(undeadPawn);
                                             RemovePsylinkAbilities(undeadPawn);
+                                            TM_Action.TryCopyIdeo(pawn, undeadPawn);
                                             HealthUtility.AdjustSeverity(undeadPawn, TorannMagicDefOf.TM_UndeadHD, -4f);
                                             HealthUtility.AdjustSeverity(undeadPawn, TorannMagicDefOf.TM_UndeadHD, .5f + ver.level);
                                             undeadPawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_UndeadHD).TryGetComp<HediffComp_Undead>().linkedPawn = pawn;
@@ -186,6 +194,7 @@ namespace TorannMagic
                                                 Hediff hd = undeadPawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("DeathAcidifier"));
                                                 undeadPawn.health.RemoveHediff(hd);
                                             }
+                                            
                                             //Color undeadColor = new Color(.2f, .4f, 0);
                                             //undeadPawn.story.hairColor = undeadColor;
                                             //CompAbilityUserMagic undeadComp = undeadPawn.GetComp<CompAbilityUserMagic>();

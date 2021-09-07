@@ -65,6 +65,21 @@ namespace TorannMagic
                 CompAbilityUserMagic compMagic = this.pawn.TryGetComp<CompAbilityUserMagic>();
                 if (tmAbility.manaCost > 0 && pawn.story != null && pawn.story.traits != null && !pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
                 {
+                    if(this.pawn.Map.gameConditionManager.ConditionIsActive(TorannMagicDefOf.TM_ManaStorm))
+                    {
+                        //DamageInfo dinfo2;
+                        //BodyPartRecord vitalPart = null;
+                        int amt = Mathf.RoundToInt(compMagic.ActualManaCost(tmAbility) * 100f);
+                        //IEnumerable<BodyPartRecord> partSearch = pawn.def.race.body.AllParts;
+                        //vitalPart = partSearch.FirstOrDefault<BodyPartRecord>((BodyPartRecord x) => x.def.tags.Contains(BodyPartTagDefOf.ConsciousnessSource));
+                        //dinfo2 = new DamageInfo(TMDamageDefOf.DamageDefOf.TM_Arcane, amt, 10, 0, pawn as Thing, vitalPart, null, DamageInfo.SourceCategory.ThingOrUnknown);
+                        //dinfo2.SetAllowDamagePropagation(false);
+                        //pawn.TakeDamage(dinfo2);
+                        if (amt > 5)
+                        {
+                            this.pawn.Map.weatherManager.eventHandler.AddEvent(new TM_WeatherEvent_MeshFlash(this.Map, this.pawn.Position, TM_MatPool.blackLightning, TMDamageDefOf.DamageDefOf.TM_Arcane, this.pawn, amt, Mathf.Clamp((float)amt/5f, 1f, 5f)));
+                        }
+                    }
                     if (compMagic != null && compMagic.Mana != null)
                     {
                         if (compMagic.ActualManaCost(tmAbility) > compMagic.Mana.CurLevel)
@@ -92,6 +107,7 @@ namespace TorannMagic
                     }
                 }
             }
+            
 
             validCastFlag = cooldownFlag || energyFlag;
 

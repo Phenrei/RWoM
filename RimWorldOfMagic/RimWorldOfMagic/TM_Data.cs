@@ -174,7 +174,6 @@ namespace TorannMagic
                 magicTraits.Add(TorannMagicDefOf.Enchanter);
                 magicTraits.Add(TorannMagicDefOf.BloodMage);
                 magicTraits.Add(TorannMagicDefOf.TM_Wanderer);
-                magicTraits.Add(TorannMagicDefOf.TM_Gifted);
                 magicTraits.Add(TorannMagicDefOf.TM_Brightmage);
                 magicTraits.Add(TorannMagicDefOf.TM_Shaman);
                 return magicTraits;
@@ -197,7 +196,6 @@ namespace TorannMagic
                 mightTraits.Add(TorannMagicDefOf.TM_Commander);
                 mightTraits.Add(TorannMagicDefOf.TM_SuperSoldier);
                 mightTraits.Add(TorannMagicDefOf.TM_Wayfarer);
-                mightTraits.Add(TorannMagicDefOf.PhysicalProdigy);
                 return mightTraits;
             }
         }
@@ -212,6 +210,19 @@ namespace TorannMagic
                 allClassTraits.AddRange(MagicTraits);
                 allClassTraits.AddRange(TM_ClassUtility.CustomClassTraitDefs);
                 return allClassTraits;
+            }
+        }
+
+        public static List<TraitDef> AllClassConflictTraits
+        {
+            get
+            {
+                List<TraitDef> allClassConflictTraits = new List<TraitDef>();
+                allClassConflictTraits.Clear();
+                allClassConflictTraits.AddRange(AllClassTraits);
+                allClassConflictTraits.Add(TorannMagicDefOf.TM_Gifted);
+                AllClassConflictTraits.Add(TorannMagicDefOf.PhysicalProdigy);
+                return allClassConflictTraits;
             }
         }
 
