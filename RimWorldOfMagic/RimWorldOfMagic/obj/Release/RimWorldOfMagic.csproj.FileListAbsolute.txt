@@ -1,0 +1,13 @@
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\bin\Release\TorannMagic.dll
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\bin\Release\TorannMagic.pdb
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\bin\Release\0Harmony.dll
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\bin\Release\System.Runtime.CompilerServices.Unsafe.dll
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\bin\Release\Unity.Abstractions.dll
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\bin\Release\Unity.Abstractions.pdb
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\bin\Release\Unity.Container.dll
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\bin\Release\Unity.Container.pdb
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\obj\Release\RimWorldOfMagic.csproj.AssemblyReference.cache
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\obj\Release\RimWorldOfMagic.csproj.CoreCompileInputs.cache
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\obj\Release\RimWorldOfMagic.csproj.CopyComplete
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\obj\Release\TorannMagic.dll
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\obj\Release\TorannMagic.pdb

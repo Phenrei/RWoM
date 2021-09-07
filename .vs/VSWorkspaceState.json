@@ -1,0 +1,17 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\RimWorldOfMagic",
+    "\\RimWorldOfMagic\\RimWorldOfMagic",
+    "\\v1.3",
+    "\\v1.3\\Defs",
+    "\\v1.3\\Defs\\AbilityDefs",
+    "\\v1.3\\Defs\\AbilityDefsAI",
+    "\\v1.3\\Defs\\PawnCapacityDefs",
+    "\\v1.3\\Defs\\RecipeDefs",
+    "\\v1.3\\Defs\\WorkGiverDefs",
+    "\\v1.3\\Defs\\WorkTypeDefs"
+  ],
+  "SelectedNode": "\\RimWorldOfMagic\\RimWorldOfMagic\\Building_TMArcaneForge.cs",
+  "PreviewInSolutionExplorer": false
+}
