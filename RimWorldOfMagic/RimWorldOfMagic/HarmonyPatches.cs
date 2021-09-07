@@ -67,6 +67,10 @@ namespace TorannMagic
                  new HarmonyMethod(patchType, nameof(PawnEquipment_Drop_Postfix)), null);
             harmonyInstance.Patch(AccessTools.Method(typeof(Pawn_EquipmentTracker), "AddEquipment"), null,
                  new HarmonyMethod(patchType, nameof(PawnEquipment_Add_Postfix)), null);
+            //harmonyInstance.Patch(AccessTools.Method(typeof(TraitDef), "ConflictsWith", new Type[]
+            //    {
+            //        typeof(TraitDef)
+            //    }), null, new HarmonyMethod(patchType, nameof(TraitConflicts_TM_Collection_Postfix)), null);
             //harmonyInstance.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), "Notify_ApparelAdded"), null, new HarmonyMethod(typeof(TorannMagicMod), "Notify_ApparelAdded_PostFix"));
             //harmonyInstance.Patch(AccessTools.Method(typeof(Pawn_ApparelTracker), "Notify_ApparelRemoved"), null, new HarmonyMethod(typeof(TorannMagicMod), "Notify_ApparelRemoved_PostFix"));
 
@@ -325,6 +329,77 @@ namespace TorannMagic
         //    return false;
         //}
 
+        public static bool Get_WindSpeed(WindManager __instance, ref float __result)
+        {
+            Map map = Traverse.Create(root: __instance).Field(name: "map").GetValue<Map>();
+            if (map != null)
+            {
+                MagicMapComponent mmc = map.GetComponent<MagicMapComponent>();
+                if (mmc != null && mmc.windSpeedEndTick > Find.TickManager.TicksGame)
+                {
+                    __result = mmc.windSpeed;
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        [HarmonyPatch(typeof(WorkGiver_Warden_EmancipateSlave), "JobOnThing", null)]
+        public class Undead_DoNotGiveEmancipateJob_Patch
+        {
+            public static bool Prefix(Pawn pawn, Thing t, ref Job __result)
+            {
+                Pawn p = t as Pawn;
+                if(p != null && ModsConfig.IdeologyActive && TM_Calc.IsUndeadNotVamp(p))
+                {
+                    __result = null;
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(SlaveRebellionUtility), "CanParticipateInSlaveRebellion", null)]
+        public class Undead_DoNotPartcicipateInSlaveRebellion_Patch
+        {
+            public static void Postfix(Pawn pawn, ref bool __result)
+            {
+                if (__result && TM_Calc.IsUndeadNotVamp(pawn))
+                {
+                    __result = false;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(PawnCapacityUtility), "CalculatePartEfficiency", null)]
+        public class CalculatePartEfficiency_NullCheck_Patch
+        {
+            public static bool Prefix(BodyPartRecord part, ref float __result)
+            {
+                if (part != null)
+                {
+                    return true;
+                }
+                __result = 0f;
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(Verb), "ValidateTarget", null)]
+        public class Validate_NonViolent_VeneratedAnimal_Patch
+        {
+            public static bool Prefix(Verb __instance, LocalTargetInfo target, ref bool __result)
+            {
+                Verb_UseAbility ability = __instance as Verb_UseAbility;
+                if(!__result && ability != null && ability.Ability != null && !ability.Ability.Def.MainVerb.isViolent)
+                {                    
+                    __result = true;
+                    return false;
+                }
+                return true;
+            }
+        }
+
         [HarmonyPatch(typeof(PawnUtility), "GainComfortFromThingIfPossible", null)]
         public class GainComfortFromThingIfPossible_Manaweave_Patch
         {
@@ -556,21 +631,6 @@ namespace TorannMagic
                     }
                 }
             }
-        }
-
-        public static bool Get_WindSpeed(WindManager __instance, ref float __result)
-        {
-            Map map = Traverse.Create(root: __instance).Field(name: "map").GetValue<Map>();
-            if (map != null)
-            {
-                MagicMapComponent mmc = map.GetComponent<MagicMapComponent>();
-                if (mmc != null && mmc.windSpeedEndTick > Find.TickManager.TicksGame)
-                {
-                    __result = mmc.windSpeed;
-                    return false;
-                }
-            }
-            return true;
         }
 
         [HarmonyPatch(typeof(Reward_Items), "InitFromValue", null)]
@@ -1766,14 +1826,14 @@ namespace TorannMagic
                     if (settingsRef.changeUndeadAnimalAppearance && pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_UndeadAnimalHD")))
                     {
                         Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("TM_UndeadStageHD"));
-                        if (hediff.Severity < 1)
-                        {
+                        //if (hediff.Severity < 1)
+                        //{
                             bodyDrawType = RotDrawMode.Rotting;
-                        }
-                        else
-                        {
-                            bodyDrawType = RotDrawMode.Dessicated;
-                        }
+                        //    }
+                        //    else
+                        //    {
+                        //        bodyDrawType = RotDrawMode.Dessicated;
+                        //    }
                     }
                 }
                 bodyMesh = null;
@@ -1836,15 +1896,15 @@ namespace TorannMagic
                 }
                 if (settingsRef.changeUndeadAnimalAppearance && ___pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_UndeadAnimalHD")))
                 {
-                    Hediff hediff = ___pawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("TM_UndeadStageHD"));
-                    if (hediff.Severity < 1)
-                    {
+                    //Hediff hediff = ___pawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("TM_UndeadStageHD"));
+                    //if (hediff.Severity < 1)
+                    //{
                         bodyDrawType = RotDrawMode.Rotting;
-                    }
-                    else
-                    {
-                        bodyDrawType = RotDrawMode.Dessicated;
-                    }
+                    //}
+                    //else
+                    //{
+                    //    bodyDrawType = RotDrawMode.Dessicated;
+                    //}
                 }
             }
             if (___pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_BirdflightHD))
@@ -2432,7 +2492,7 @@ namespace TorannMagic
         [HarmonyPatch(typeof(Pawn), "Kill", null)]
         public static class Undead_Kill_Prefix
         {
-            public static bool Prefix(ref Pawn __instance)
+            public static bool Prefix(ref Pawn __instance, DamageInfo? dinfo)
             {
                 if (__instance != null)
                 {
@@ -2447,6 +2507,18 @@ namespace TorannMagic
                     if(__instance.def.thingClass == typeof(TMPawnSummoned))
                     {
                         __instance.SetFaction(null, null);
+                    }
+                    if (TM_Calc.IsMagicUser(__instance) && dinfo.HasValue && dinfo.Value.Instigator != null)
+                    {
+                        Find.HistoryEventsManager.RecordEvent(new HistoryEvent(TorannMagicDefOf.TM_KilledMage, dinfo.Value.Instigator.Named(HistoryEventArgsNames.Doer), __instance.Named(HistoryEventArgsNames.Victim)));
+                    }
+                    if (TM_Calc.IsMightUser(__instance) && dinfo.HasValue && dinfo.Value.Instigator != null)
+                    {
+                        Find.HistoryEventsManager.RecordEvent(new HistoryEvent(TorannMagicDefOf.TM_KilledFighter, dinfo.Value.Instigator.Named(HistoryEventArgsNames.Doer), __instance.Named(HistoryEventArgsNames.Victim)));
+                    }
+                    if (__instance.RaceProps != null && __instance.RaceProps.Humanlike && __instance.Faction != null && !__instance.Faction.IsPlayer && dinfo.HasValue && dinfo.Value.Instigator != null && dinfo.Value.Instigator.Faction.IsPlayer)
+                    {
+                        Find.HistoryEventsManager.RecordEvent(new HistoryEvent(TorannMagicDefOf.TM_KilledHumanlike, dinfo.Value.Instigator.Named(HistoryEventArgsNames.Doer), __instance.Named(HistoryEventArgsNames.Victim)));
                     }
                 }
                 return true;
@@ -2631,7 +2703,7 @@ namespace TorannMagic
                         {
                             if (pawn.Map == null)
                             {
-                                Log.Message("Tried to do death retaliation in a null map.");
+                                //Log.Message("Tried to do death retaliation in a null map.");
                             }
                             else
                             {
@@ -5163,6 +5235,10 @@ namespace TorannMagic
         {
             if (pawn.IsColonist || (pawn.Faction != null && pawn.Faction.IsPlayer))
             {
+                if(ModsConfig.IdeologyActive && pawn.IsSlaveOfColony)
+                {
+                    return true;
+                }
                 __result = pawn.IsWorldPawn() && ThingOwnerUtility.AnyParentIs<ActiveDropPodInfo>(pawn);
                 return false;
             }

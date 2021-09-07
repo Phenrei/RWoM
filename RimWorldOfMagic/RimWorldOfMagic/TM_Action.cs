@@ -57,6 +57,23 @@ namespace TorannMagic
             }
         }
 
+        public static Toil With_TM_Effects(this Toil toil, ThingDef moteDef, int frequency, float scale, float solidTime, float fadeIn, float fadeOut, int rotationRate, float velocity, float velocityAngle, float lookAngle)
+        {
+            toil.AddPreTickAction(delegate
+            {
+                if (toil.actor.Faction == Faction.OfPlayer && toil.actor.Map != null && Find.TickManager.TicksGame % frequency == 0)
+                {
+                    TM_MoteMaker.ThrowGenericMote(moteDef, toil.actor.DrawPos, toil.actor.Map, Rand.Range(.2f * scale, 1.1f * scale), Rand.Range(.75f * solidTime, 1.25f* solidTime), Rand.Range(.8f *fadeIn, 1.2f*fadeIn), Rand.Range(.8f * fadeOut, 1.2f * fadeOut), Mathf.RoundToInt(Rand.Range(.8f *rotationRate, 1.2f* rotationRate)), velocity, velocityAngle, Rand.Range(0,360));
+                }
+            });
+            toil.AddFinishAction(delegate
+            {
+                
+            });
+            return toil;
+        }            
+
+
         public static void DoMeleeReversal(DamageInfo dinfo, Pawn reflectingPawn)
         {
             Thing instigator = dinfo.Instigator;
@@ -108,7 +125,7 @@ namespace TorannMagic
             }
 
             //GiveReversalJob(dinfo);            
-        }
+        }        
 
         public static void DoReversalRandomTarget(DamageInfo dinfo, Pawn reflectingPawn, float minRange, float maxRange)
         {
@@ -156,6 +173,21 @@ namespace TorannMagic
                         target = TM_Calc.FindNearbyEnemy(reflectingPawn, (int)maxRange);
                     }
                     TM_CopyAndLaunchProjectile.CopyAndLaunchThing(projectile, reflectingPawn, target, target, ProjectileHitFlags.All, null);
+                }
+            }
+        }
+
+        public static void TryCopyIdeo(Pawn sourcePawn, Pawn targetPawn)
+        {
+            if (ModsConfig.IdeologyActive && sourcePawn?.ideo != null && targetPawn?.ideo != null)
+            {
+                if (targetPawn.Ideo != sourcePawn.Ideo)
+                {
+                    targetPawn.ideo.SetIdeo(sourcePawn.Ideo);
+                }
+                if(targetPawn.ideo.Certainty != sourcePawn.ideo.Certainty)
+                {
+                    Traverse.Create(root: targetPawn.ideo).Field(name: "certainty").SetValue(sourcePawn.ideo.Certainty);
                 }
             }
         }
@@ -1261,7 +1293,7 @@ namespace TorannMagic
             pawn.DeSpawn();
             GenPlace.TryPlaceThing(pawn, comp.recallPosition, comp.recallMap, ThingPlaceMode.Near);
             pawn.drafter.Drafted = draftFlag;
-            if (selectFlag)
+            if (selectFlag && ModOptions.Settings.Instance.cameraSnap)
             {
                 CameraJumper.TryJumpAndSelect(pawn);
             }
@@ -1553,7 +1585,10 @@ namespace TorannMagic
                         if (p.IsColonist)
                         {
                             p.drafter.Drafted = true;
-                            CameraJumper.TryJumpAndSelect(p);
+                            if (ModOptions.Settings.Instance.cameraSnap)
+                            {
+                                CameraJumper.TryJumpAndSelect(p);
+                            }
                         }
                         surgeText = "Teleportation";
                         ModOptions.Constants.SetPawnInFlight(false);
@@ -1772,15 +1807,18 @@ namespace TorannMagic
                 }
                 int transStackValue = Mathf.RoundToInt(transStackCount * transmutateThing.def.BaseMarketValue);
                 float newMatCount = 0;
-                IEnumerable<ThingDef> enumerable = from def in DefDatabase<ThingDef>.AllDefs
-                                                   where (def.BaseMarketValue > .1f && def.BaseMarketValue <= 100 && def != transmutateThing.def && ((def.stuffProps != null && def.stuffProps.categories != null && def.stuffProps.categories.Count > 0) || def.defName == "RawMagicyte") || def.IsWithinCategory(ThingCategoryDefOf.ResourcesRaw) || def.IsWithinCategory(ThingCategoryDefOf.Leathers))
+                IEnumerable<ThingDef> enumerable = from def in DefDatabase<ThingDef>.AllDefs.InRandomOrder()
+                                                   where (def.BaseMarketValue >= 1f && def.BaseMarketValue <= 200 && def != transmutateThing.def && ((def.stuffProps != null && def.stuffProps.categories != null && def.stuffProps.categories.Count > 0) || def.defName == "RawMagicyte") || def.IsWithinCategory(ThingCategoryDefOf.ResourcesRaw) || def.IsWithinCategory(ThingCategoryDefOf.Leathers))
                                                    select def;
-
+                ThingDef newThingDef = null;
                 foreach (ThingDef current in enumerable)
                 {
                     if (current != null && current.defName != null)
                     {
-                        newMatCount = transStackValue / current.BaseMarketValue;
+                        float newThingValue = current.BaseMarketValue < 1f ? 1f : current.BaseMarketValue;
+                        newMatCount = transStackValue / newThingValue;
+                        newThingDef = current;
+                        break;
                         //Log.Message("transumtation resource " + current.defName + " base value " + current.BaseMarketValue + " value count converts to " + newMatCount);
                     }
                 }
@@ -1793,13 +1831,14 @@ namespace TorannMagic
                     transmutateThing.SplitOff(transStackCount).Destroy(DestroyMode.Vanish);
                 }
                 Thing thing = null;
-                ThingDef newThingDef = enumerable.RandomElement();
-                newMatCount = Mathf.Max(transStackValue / newThingDef.BaseMarketValue, 1);
-                thing = ThingMaker.MakeThing(newThingDef);
-                thing.stackCount = Mathf.RoundToInt((.7f + (.05f * pwrVal)) * newMatCount);
-                if (newMatCount < 1)
+                if (newThingDef != null)
                 {
-                    newMatCount = 1;
+                    thing = ThingMaker.MakeThing(newThingDef);
+                    thing.stackCount = Mathf.RoundToInt((.7f + (.05f * pwrVal)) * newMatCount);
+                    if (newMatCount < 1)
+                    {
+                        newMatCount = 1;
+                    }
                 }
 
                 if (thing != null)
@@ -1982,12 +2021,16 @@ namespace TorannMagic
             }
         }
 
-        public static void CreateMagicDeathEffect(Pawn pawn, IntVec3 pos)
+        public static void CreateMagicDeathEffect(Pawn pawn, IntVec3 pos, bool canCauseDeath = true, bool friendlyFire = false)
         {
             ModOptions.SettingsRef settingsRef = new ModOptions.SettingsRef();
             List<IntVec3> targets = new List<IntVec3>();
             List<Pawn> pawns = new List<Pawn>();
             int rnd = Rand.RangeInclusive(0, 6);
+            if(friendlyFire)
+            {
+                rnd = Rand.RangeInclusive(0, 4);
+            }
             switch (rnd)
             {
                 case 0: //Death explosion
@@ -2024,7 +2067,7 @@ namespace TorannMagic
                         }
                         if (victim != null)
                         {
-                            if (victim.Faction != faction || victim == pawn)
+                            if (friendlyFire || (victim.Faction != faction || victim == pawn))
                             {
                                 TM_Action.DamageEntities(victim, null, Rand.Range(12, 20), 1f, TMDamageDefOf.DamageDefOf.TM_Arcane, pawn);
                             }
@@ -2043,7 +2086,7 @@ namespace TorannMagic
                         {
                             if (pawns[i] != null && pawns[i].mindState != null && pawns[i].mindState.mentalStateHandler != null)
                             {
-                                if (pawns[i].Faction != pawn.Faction)
+                                if (pawns[i].Faction != pawn.Faction || friendlyFire)
                                 {
                                     if (Rand.Chance(TM_Calc.GetSpellSuccessChance(pawn, pawns[i], true)))
                                     {
@@ -2059,6 +2102,10 @@ namespace TorannMagic
                     break;
                 case 2: //Summon 4x firestorm skyfallers
                     Pawn targetF = TM_Calc.FindNearbyEnemy(pos, pawn.Map, pawn.Faction, 60, 10);
+                    if(friendlyFire)
+                    {
+                        targetF = pawn;
+                    }
                     if (targetF != null)
                     {
                         for (int i = 0; i < 4; i++)
@@ -2083,6 +2130,10 @@ namespace TorannMagic
                     break;
                 case 3: //summon 4x blizzard skyfallers
                     Pawn targetI = TM_Calc.FindNearbyEnemy(pos, pawn.Map, pawn.Faction, 70, 10);
+                    if(friendlyFire)
+                    {
+                        targetI = pawn;
+                    }
                     if (targetI != null)
                     {
                         for (int i = 0; i < 4; i++)
@@ -2107,7 +2158,7 @@ namespace TorannMagic
                     break;
                 case 4: //stun pulse
                     GenExplosion.DoExplosion(pos, pawn.Map, 6, DamageDefOf.Stun, pawn, 0, 0);
-                    pawns = TM_Calc.FindAllPawnsAround(pawn.Map, pos, 4f, pawn.Faction, false);
+                    pawns = TM_Calc.FindAllPawnsAround(pawn.Map, pos, 4f, pawn.Faction, friendlyFire);
                     if (pawns != null && pawns.Count > 0)
                     {
                         for (int i = 0; i < pawns.Count; i++)
@@ -2119,7 +2170,7 @@ namespace TorannMagic
                 case 5: //mana mine trap
                     AbilityUser.SpawnThings tempPod = new SpawnThings();
                     tempPod.def = ThingDef.Named("TM_ManaMine_III");
-                    tempPod.spawnCount = 1;
+                    tempPod.spawnCount = 1;                    
                     Projectile_SummonExplosive.SingleSpawnLoop(tempPod, pos, pawn.Map, pawn, 15000);
                     break;
                 case 6:  //Healing wave
@@ -2142,7 +2193,7 @@ namespace TorannMagic
                     }
                     break;
             }
-            if (settingsRef.deathRetaliationIsLethal && rnd < 6)
+            if (canCauseDeath && settingsRef.deathRetaliationIsLethal && rnd < 6)
             {
                 KillPawnByMindBurn(pawn);
             }
