@@ -1505,8 +1505,7 @@ namespace TorannMagic
             {
                 if (p != null && p.story != null && !p.story.DisabledWorkTagsBackstoryAndTraits.HasFlag(WorkTags.Violent) && apparel == TorannMagicDefOf.TM_Artifact_BracersOfThePacifist)
                 {
-                    //__result = false;
-                    __result = true;
+                    __result = false;
                 }
             }
         }
@@ -2175,7 +2174,7 @@ namespace TorannMagic
                         if (ModOptions.Constants.GetCloaksNorth().Contains(mat.mainTexture))
                         {
                             //loc.y += .00175f; //was 0.006f
-                            loc.y = 8.309f; //7.9961f; 8.209
+                            loc.y = 8.75f; //7.9961f; 8.209, 8.309
                         }
 
                         if (drawNow)
