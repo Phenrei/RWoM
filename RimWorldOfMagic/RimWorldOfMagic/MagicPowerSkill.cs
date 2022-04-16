@@ -22,7 +22,8 @@ namespace TorannMagic
             this.level = 0;
 
             if(this.label == "TM_HolyWrath_ver" || this.label == "TM_HolyWrath_pwr" || this.label.Contains("TM_BardTraining") || this.label == "TM_Sentinel_pwr" || this.label == "TM_EnchanterStone_ver" || 
-                this.label == "TM_Polymorph_ver" || this.label.Contains("TM_Shapeshift") || this.label == "TM_AlterFate_pwr" || this.label == "TM_LightSkip_pwr" || this.label.Contains("TM_ChaosTradition"))
+                this.label == "TM_Polymorph_ver" || this.label.Contains("TM_Shapeshift") || this.label == "TM_AlterFate_pwr" || this.label == "TM_LightSkip_pwr" || this.label.Contains("TM_ChaosTradition") ||
+                this.label == "TM_RuneCarving_pwr")
             {
                 costToLevel = 2;
             }
@@ -31,7 +32,8 @@ namespace TorannMagic
             {
                 this.levelMax = 6;
             }
-            else if (newLabel == "TM_global_regen_pwr" || newLabel == "TM_global_eff_pwr" || newLabel == "TM_EarthSprites_pwr" || newLabel == "TM_Prediction_pwr" || newLabel == "TM_GuardianSpirit_pwr")
+            else if (newLabel == "TM_global_regen_pwr" || newLabel == "TM_global_eff_pwr" || newLabel == "TM_EarthSprites_pwr" || newLabel == "TM_Prediction_pwr" || newLabel == "TM_GuardianSpirit_pwr" ||
+                newLabel == "TM_Golemancy_pwr" || newLabel == "TM_Golemancy_eff" || newLabel == "TM_Golemancy_ver")
             {
                 this.levelMax = 5;
             }

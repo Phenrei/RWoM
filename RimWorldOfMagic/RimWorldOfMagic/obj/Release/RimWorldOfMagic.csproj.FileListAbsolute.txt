@@ -11,3 +11,5 @@ C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\obj\Release\RimWorl
 C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\obj\Release\RimWorldOfMagic.csproj.CopyComplete
 C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\obj\Release\TorannMagic.dll
 C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\obj\Release\TorannMagic.pdb
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\bin\Release\HugsLib.dll
+C:\Programming\Rimworld\RWoM\RimWorldOfMagic\RimWorldOfMagic\bin\Release\AllowTool.dll

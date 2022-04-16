@@ -27,6 +27,16 @@
         <countsAsParticipant>False</countsAsParticipant>
         <ignoreBleeding>true</ignoreBleeding>
       </li>
+	  <li Class="RitualRoleTag">
+        <label>guide</label>
+        <tag>Moralist</tag>
+        <id>moralistId</id>
+        <precept MayRequire="Ludeon.RimWorld.Ideology">IdeoRole_Moralist</precept>
+        <required>False</required>
+        <substitutable>False</substitutable>
+        <maxCount>1</maxCount>
+        <countsAsParticipant>True</countsAsParticipant>
+      </li>
     </roles>
     <stages>
       <li>
@@ -193,7 +203,7 @@
         <qualityOffset>0.1</qualityOffset>
       </li>
 	  <li Class="RitualOutcomeComp_RolePresentNotSubstituted">
-        <roleId>doer</roleId>
+        <roleId>moralistId</roleId>
         <label>moral guide present</label>
         <qualityOffset>0.1</qualityOffset>
       </li>
@@ -290,6 +300,16 @@
         <required>True</required>
         <countsAsParticipant>True</countsAsParticipant>
         <ignoreBleeding>true</ignoreBleeding>
+      </li>
+	  <li Class="RitualRoleTag">
+        <label>guide</label>
+        <tag>Moralist</tag>
+        <id>moralistId</id>
+        <precept MayRequire="Ludeon.RimWorld.Ideology">IdeoRole_Moralist</precept>
+        <required>False</required>
+        <substitutable>False</substitutable>
+        <maxCount>1</maxCount>
+        <countsAsParticipant>True</countsAsParticipant>
       </li>
     </roles>
     <stages>
@@ -449,7 +469,7 @@
         <qualityOffset>0.1</qualityOffset>
       </li>
 	  <li Class="RitualOutcomeComp_RolePresentNotSubstituted">
-        <roleId>doer</roleId>
+        <roleId>moralistId</roleId>
         <label>moral guide present</label>
         <qualityOffset>0.1</qualityOffset>
       </li>
@@ -530,14 +550,24 @@
         <required>True</required>
         <countsAsParticipant>True</countsAsParticipant>
       </li>
-      <li Class="TorannMagic.Ideology.TM_RitualRoleGifted">
-        <label>gifted</label>
-        <missingDesc>a colonist with the gifted trait</missingDesc>
+      <li Class="TorannMagic.Ideology.TM_RitualRoleGiftedInspired">
+        <label>inspired gifted</label>
+        <missingDesc>a colonist with the gifted trait inspired to become a mage class</missingDesc>
         <id>mageId</id>
         <maxCount>1</maxCount>
         <required>True</required>
         <countsAsParticipant>True</countsAsParticipant>
         <ignoreBleeding>true</ignoreBleeding>
+      </li>
+	  <li Class="RitualRoleTag">
+        <label>guide</label>
+        <tag>Moralist</tag>
+        <id>moralistId</id>
+        <precept MayRequire="Ludeon.RimWorld.Ideology">IdeoRole_Moralist</precept>
+        <required>False</required>
+        <substitutable>False</substitutable>
+        <maxCount>1</maxCount>
+        <countsAsParticipant>True</countsAsParticipant>
       </li>
     </roles>
     <stages>
@@ -674,6 +704,7 @@
       <li>TM_BestowMagicClass</li>
     </tags>
     <patternGroupTag>TM_BestowMagicClassRitual</patternGroupTag>
+	<alwaysStartAnytime>true</alwaysStartAnytime>
 <!--     <ritualObligationTriggers>
       <li Class="TorannMagic.Ideology.TM_RitualObligationTrigger_BestowMagicClassProperties">
         <mustBePlayerIdeo>true</mustBePlayerIdeo>
@@ -691,7 +722,7 @@
         <qualityOffset>0.1</qualityOffset>
       </li>
 	  <li Class="RitualOutcomeComp_RolePresentNotSubstituted">
-        <roleId>doer</roleId>
+        <roleId>moralistId</roleId>
         <label>moral guide present</label>
         <qualityOffset>0.1</qualityOffset>
       </li>

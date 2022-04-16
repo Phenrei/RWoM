@@ -50,7 +50,7 @@ namespace TorannMagic
                 {
                     FlyingObject_Whirlwind flyingObject = (FlyingObject_Whirlwind)GenSpawn.Spawn(ThingDef.Named("FlyingObject_Whirlwind"), this.CasterPawn.Position, this.CasterPawn.Map);
                     flyingObject.Launch(this.CasterPawn, t.Cell, this.CasterPawn);
-                }, "LaunchingFlyer", false, null);                
+                }, "LaunchingFlyer", false, null);
             }
         }
 

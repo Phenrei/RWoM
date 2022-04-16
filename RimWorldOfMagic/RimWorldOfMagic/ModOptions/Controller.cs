@@ -70,7 +70,6 @@ namespace TorannMagic.ModOptions
                 Rect rect = new Rect(64f, 64f, 480, 640);
                 FactionOptionsWindow newWindow = new FactionOptionsWindow();
                 Find.WindowStack.Add(newWindow);
-
             }
             num++;
             Rect rowRect2 = UIHelper.GetRowRect(rowRect, rowHeight, num);
@@ -83,6 +82,16 @@ namespace TorannMagic.ModOptions
             {
                 Rect rect = new Rect(64f, 64f, 400, 400);
                 EventOptionsWindow newWindow = new EventOptionsWindow();
+                Find.WindowStack.Add(newWindow);
+            }
+            Rect rowRect2ShiftRightPlus = UIHelper.GetRowRect(rowRect2, rowHeight, num);
+            rowRect2ShiftRightPlus.x += (rowRect2.width + rowRect2ShiftRight.width) + 56f;
+            rowRect2ShiftRightPlus.width /= 3;
+            factionOptions = Widgets.ButtonText(rowRect2ShiftRightPlus, "Golem Options", true, false, true);
+            if (factionOptions)
+            {
+                Rect rect = new Rect(64f, 64f, 480, 640);
+                GolemOptionsWindow newWindow = new GolemOptionsWindow();
                 Find.WindowStack.Add(newWindow);
             }
             num++;
@@ -100,12 +109,16 @@ namespace TorannMagic.ModOptions
             num++;
             Rect rowRect4 = UIHelper.GetRowRect(rowRect3, rowHeight, num);
             Settings.Instance.deathRetaliationChance = Widgets.HorizontalSlider(rowRect4, Settings.Instance.deathRetaliationChance, 0f, 1f, false, "TM_DeathRetaliationChance".Translate() + " " + Settings.Instance.deathRetaliationChance.ToString("P0"), "0", "1", .01f);
+            Rect rowRect4ShiftRight = UIHelper.GetRowRect(rowRect4, rowHeight, num);
+            rowRect4ShiftRight.x += rowRect4.width + 56f;
+            Widgets.CheckboxLabeled(rowRect4ShiftRight, "TM_enableAutocast".Translate(), ref Settings.Instance.autocastEnabled, false);
             num++;
             Rect rowRect5 = UIHelper.GetRowRect(rowRect4, rowHeight, num);
             Settings.Instance.deathRetaliationDelayFactor = Widgets.HorizontalSlider(rowRect5, Settings.Instance.deathRetaliationDelayFactor, .1f, 4f, false, "TM_DeathRetaliationDelay".Translate() + " " + Settings.Instance.deathRetaliationDelayFactor.ToString("P0"), "0", "4", .01f);
             Rect rowRect5ShiftRight = UIHelper.GetRowRect(rowRect5, rowHeight, num);
             rowRect5ShiftRight.x += rowRect5.width + 56f;
-            Widgets.CheckboxLabeled(rowRect5ShiftRight, "TM_enableAutocast".Translate(), ref Settings.Instance.autocastEnabled, false);
+            Widgets.CheckboxLabeled(rowRect5ShiftRight, "TM_queueAutocast".Translate(), ref Settings.Instance.autocastQueueing, false);
+            TooltipHandler.TipRegion(rowRect5ShiftRight, "TM_queueAutocastDesc".Translate());
             num++;
             Rect rowRect6 = UIHelper.GetRowRect(rowRect5, rowHeight, num);
             //Settings.Instance.advMageChance = Widgets.HorizontalSlider(rowRect6, Settings.Instance.advMageChance, 0f, 2f, false, "advMageChance".Translate() + " " + Rarity(Settings.Instance.advMageChance) + " " + TM_Calc.GetMageSpawnChance().ToString("P1"), "0", "2", .01f);

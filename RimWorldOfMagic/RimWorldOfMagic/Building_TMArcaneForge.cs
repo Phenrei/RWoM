@@ -220,7 +220,6 @@ namespace TorannMagic
                 {
                     ic.filter.SetAllow(replicatedStuffDef, true);
                     ic.SetBaseCount(replicatedThingDef.costStuffCount);
-                    forgeRecipe.ingredients.Clear();
                     forgeRecipe.ingredients.Add(ic);
                 }
 

@@ -146,6 +146,9 @@ namespace TorannMagic.ModOptions
             num++;
             Rect rowRect11 = Controller.UIHelper.GetRowRect(rowRect10, rowHeight, num);
             Widgets.CheckboxLabeled(rowRect11, "TM_Demonkin".Translate(), ref Settings.Instance.Demonkin, false);
+            Rect rowRect11ShiftRight = Controller.UIHelper.GetRowRect(rowRect11, rowHeight, num);
+            rowRect11ShiftRight.x += rowRect.width + 98f;
+            Widgets.CheckboxLabeled(rowRect11ShiftRight, "TM_Apothecary".Translate(), ref Settings.Instance.Apothecary);
             num++;
             Rect rowRect12 = Controller.UIHelper.GetRowRect(rowRect11, rowHeight, num);
             Widgets.CheckboxLabeled(rowRect12, "TM_Technomancer".Translate(), ref Settings.Instance.Technomancer, false);
@@ -168,13 +171,19 @@ namespace TorannMagic.ModOptions
             Rect rowRect18 = Controller.UIHelper.GetRowRect(rowRect17, rowHeight, num);
             Widgets.CheckboxLabeled(rowRect18, "TM_Shaman".Translate(), ref Settings.Instance.Shaman, false);
             num++;
+            Rect rowRect21 = Controller.UIHelper.GetRowRect(rowRect18, rowHeight, num);
+            Widgets.CheckboxLabeled(rowRect21, "TM_Golemancer".Translate(), ref Settings.Instance.Golemancer, false);
+            num++;
+            Rect rowRect22 = Controller.UIHelper.GetRowRect(rowRect21, rowHeight, num);
+            Widgets.CheckboxLabeled(rowRect22, "TM_Empath".Translate(), ref Settings.Instance.Empath, false);
+            num++;
             Widgets.DrawLineHorizontal(inRect.x - 10f, rowHeight * num, inRect.width - 15f);
             num++;
             Rect slRect2 = Controller.UIHelper.GetRowRect(slRect1, rowHeight, num);
             Settings.Instance.supportTraitChance = Widgets.HorizontalSlider(slRect2, Settings.Instance.supportTraitChance, 0f, 1f, false, "supportTraitChance".Translate() + " " + (Settings.Instance.supportTraitChance).ToString("P1"), "0", "1", .01f);
             //Rect slRect2ShiftRight = Controller.UIHelper.GetRowRect(slRect1, rowHeight, num);
             num++;
-            Rect rowRect19 = Controller.UIHelper.GetRowRect(rowRect18, rowHeight, num); ;
+            Rect rowRect19 = Controller.UIHelper.GetRowRect(rowRect21, rowHeight, num); ;
             Widgets.CheckboxLabeled(rowRect19, "TM_ArcaneConduit".Translate(), ref Settings.Instance.ArcaneConduit, false);
             Rect rowRect19ShiftRight = Controller.UIHelper.GetRowRect(rowRect19, rowHeight, num);
             rowRect19ShiftRight.x += rowRect.width + 98f;
@@ -182,6 +191,18 @@ namespace TorannMagic.ModOptions
             num++;
             Rect rowRect20 = Controller.UIHelper.GetRowRect(rowRect19, rowHeight, num); ;
             Widgets.CheckboxLabeled(rowRect20, "TM_ManaWell".Translate(), ref Settings.Instance.ManaWell, false);
+            Rect rowRect20ShiftRight = Controller.UIHelper.GetRowRect(rowRect20, rowHeight, num);
+            rowRect20ShiftRight.x += rowRect.width + 98f;
+            Widgets.CheckboxLabeled(rowRect20ShiftRight, "GiantsBlood".Translate(), ref Settings.Instance.GiantsBlood, false);
+            num++;
+            Rect rowRect20a = Controller.UIHelper.GetRowRect(rowRect20, rowHeight, num); ;
+            Widgets.CheckboxLabeled(rowRect20a, "TM_FaeBlood".Translate(), ref Settings.Instance.FaeBlood, false);
+            num++;
+            Rect rowRect20b = Controller.UIHelper.GetRowRect(rowRect20, rowHeight, num); ;
+            Widgets.CheckboxLabeled(rowRect20b, "TM_Enlightened".Translate(), ref Settings.Instance.Enlightened, false);
+            num++;
+            Rect rowRect20c = Controller.UIHelper.GetRowRect(rowRect20, rowHeight, num); ;
+            Widgets.CheckboxLabeled(rowRect20c, "TM_Cursed".Translate(), ref Settings.Instance.Cursed, false);
             num++;
             Widgets.DrawLineHorizontal(inRect.x - 10f, rowHeight * num, inRect.width - 15f);
             num++;
@@ -198,13 +219,29 @@ namespace TorannMagic.ModOptions
                 {
                     classEnabled = Settings.Instance.Brightmage;
                 }
-                if(cClass.classTrait == TorannMagicDefOf.TM_Shaman)
+                else if(cClass.classTrait == TorannMagicDefOf.TM_Shaman)
                 {
                     classEnabled = Settings.Instance.Shaman;
                 }
-                if(cClass.classTrait == TorannMagicDefOf.TM_TheShadow)
+                else if (cClass.classTrait == TorannMagicDefOf.TM_Golemancer)
+                {
+                    classEnabled = Settings.Instance.Golemancer;
+                }
+                else if (cClass.classTrait == TorannMagicDefOf.TM_Empath)
+                {
+                    classEnabled = Settings.Instance.Empath;
+                }
+                else if (cClass.classTrait == TorannMagicDefOf.TM_TheShadow)
                 {
                     classEnabled = Settings.Instance.Shadow;
+                }
+                else if (cClass.classTrait == TorannMagicDefOf.TM_Apothecary)
+                {
+                    classEnabled = Settings.Instance.Apothecary;
+                }
+                else if (cClass.classTrait == TorannMagicDefOf.TM_Empath)
+                {
+                    classEnabled = Settings.Instance.Empath;
                 }
                 if (cClass.shouldShow)
                 {                    

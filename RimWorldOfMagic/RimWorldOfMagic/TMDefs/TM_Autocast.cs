@@ -125,6 +125,51 @@ namespace TorannMagic.TMDefs
             }
         }
 
+        public bool ValidType(Type targetType, LocalTargetInfo target)
+        {
+            if (target.Thing != null)
+            {
+                if (targetType == typeof(Pawn))
+                {
+                    if (target.Thing is Pawn)
+                    {
+                        return true;
+                    }
+                }
+                else if (targetType == typeof(ThingWithComps))
+                {
+                    if (target.Thing is ThingWithComps)
+                    {
+                        return true;
+                    }
+                }
+                else if (targetType == typeof(Building))
+                {
+                    if (target.Thing is Building)
+                    {
+                        return true;
+                    }
+                }
+                else if (targetType == typeof(Corpse))
+                {
+                    if (target.Thing is Corpse)
+                    {
+                        return true;
+                    }
+                }
+                else if(target.Thing != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+            if (targetType == typeof(LocalTargetInfo))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public void ExposeData()
         {
             Scribe_Values.Look<bool>(ref this.mightUser, "mightUser", false);
@@ -169,28 +214,106 @@ namespace TorannMagic.TMDefs
                 foreach(HediffDef hdd in con.hediffDefs)
                 {
                     Hediff hd = p.health.hediffSet.GetFirstHediffOfDef(hdd);
-                    if(hd != null && hd.Severity > con.valueA)
-                    {
-                        hasAnyHediff = true;
+                    if(hd != null)
+                    {                        
+                        if (con.valueA != 0)
+                        {
+                            if (hd.Severity >= con.valueA)
+                            {
+                                if (con.valueB != 0)
+                                {
+                                    if (hd.Severity <= con.valueB)
+                                    {
+                                        hasAnyHediff = true;
+                                    }
+                                    else
+                                    {
+                                        hasAnyHediff = false;
+                                    }
+                                }
+                                else
+                                {
+                                    hasAnyHediff = true;
+                                }
+                            }
+                            else
+                            {
+                                hasAnyHediff = false;
+                            }
+                        }
+                        else if (con.valueB != 0)
+                        {
+                            if (hd.Severity <= con.valueB)
+                            {
+                                hasAnyHediff = true;
+                            }
+                            else
+                            {
+                                hasAnyHediff = false;
+                            }
+                        }
+                        else
+                        {
+                            hasAnyHediff = true;
+                        }
                     }
-                }
+                }                
                 return (con.invert ? !hasAnyHediff : hasAnyHediff);
             }
             return false;
         }
 
         private bool HasNeed(TM_AutocastCondition con, Pawn p)
-        {
+        {            
             if (p != null && p.needs != null)
             {
                 bool hasAnyNeed = false;
                 foreach(Need n in p.needs.AllNeeds)
                 {
-                    if(n != null && con.needDefs.Contains(n.def) && n.CurLevel > con.valueA)
-                    {
-                        hasAnyNeed = true;
+                    if(n != null && con.needDefs.Contains(n.def))
+                    {                        
+                        if (con.valueA != 0)
+                        {                           
+                            if (n.CurLevel >= con.valueA)
+                            {
+                                if (con.valueB != 0)
+                                {
+                                    if (n.CurLevel <= con.valueB)
+                                    {
+                                        hasAnyNeed = true;
+                                    }
+                                    else
+                                    {
+                                        hasAnyNeed = false;
+                                    }
+                                }
+                                else
+                                {
+                                    hasAnyNeed = true;
+                                }
+                            }
+                            else
+                            {
+                                hasAnyNeed = false;
+                            }
+                        }
+                        else if (con.valueB != 0)
+                        {                           
+                            if (n.CurLevel <= con.valueB)
+                            {
+                                hasAnyNeed = true;
+                            }
+                            else
+                            {
+                                hasAnyNeed = false;
+                            }
+                        }
+                        else
+                        {
+                            hasAnyNeed = true;
+                        }
                     }
-                }
+                }                
                 return (con.invert ? !hasAnyNeed : hasAnyNeed);
             }
             return false;
@@ -200,9 +323,8 @@ namespace TorannMagic.TMDefs
         {
             List<Pawn> enemies = TM_Calc.FindPawnsNearTarget(caster, (int)con.valueB, cell, true);
             if (enemies != null)
-            {
-                //Log.Message(enemies.Count + " found in range of " + cell);
-                return (con.invert ? enemies.Count <= con.valueA : enemies.Count > con.valueA);
+            {               
+                return (con.invert ? enemies.Count < con.valueA : enemies.Count >= con.valueA);
             }
             return false;
         }

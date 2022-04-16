@@ -17,6 +17,13 @@ namespace TorannMagic
         private bool initialized = false;
 
         public Pawn linkedPawn = null;
+        private static readonly string[] nonStandardNeedsToAutoFulfill = new[] {
+            "Mood",
+            "Suppression",
+            "Bladder", //Dubs Bad Hygiene
+            "Hygiene", //Dubs Bad Hygiene
+            "DBHThirst" //Dubs Bad Hygiene
+        };
 
         public override void CompExposeData()
         {
@@ -72,7 +79,8 @@ namespace TorannMagic
                 {
                     if (comp != null)
                     {
-                        int ver = TM_Calc.GetMagicSkillLevel(linkedPawn, comp.MagicData.MagicPowerSkill_RaiseUndead, "TM_RaiseUndead", "_ver");
+                        //int ver = TM_Calc.GetMagicSkillLevel(linkedPawn, comp.MagicData.MagicPowerSkill_RaiseUndead, "TM_RaiseUndead", "_ver");
+                        int ver = TM_Calc.GetSkillVersatilityLevel(linkedPawn, TorannMagicDefOf.TM_RaiseUndead, false);
                         if (this.parent.Severity != ver + .5f)
                         {
                             this.parent.Severity = .5f + ver;
@@ -115,8 +123,9 @@ namespace TorannMagic
                     }
                 }
             }
-            if (Find.TickManager.TicksGame % 6000 == 0)
+            if (Find.TickManager.TicksGame % 6000 == 0 && linkedPawn != null)
             {
+                Find.HistoryEventsManager.RecordEvent(new HistoryEvent(TorannMagicDefOf.TM_UsedMagic, linkedPawn.Named(HistoryEventArgsNames.Doer), linkedPawn.Named(HistoryEventArgsNames.Subject), linkedPawn.Named(HistoryEventArgsNames.AffectedFaction), linkedPawn.Named(HistoryEventArgsNames.Victim)), true);
                 TM_Action.UpdateAnimalTraining(base.Pawn);                
             }
             bool flag4 = Find.TickManager.TicksGame % 600 == 0 && this.Pawn.def != TorannMagicDefOf.TM_SkeletonR && this.Pawn.def != TorannMagicDefOf.TM_GiantSkeletonR;
@@ -129,19 +138,19 @@ namespace TorannMagic
                     necroValid = true;
                     lichStrike = 0;
 
-                    if (ModsConfig.IdeologyActive && !this.Pawn.Downed)
+                    if (ModsConfig.IdeologyActive && !this.Pawn.Downed && this.Pawn.guest != null && this.Pawn.ideo != null)
                     {
                         TM_Action.TryCopyIdeo(linkedPawn, this.Pawn);
-                        if (this.Pawn.guest?.GuestStatus != GuestStatus.Slave)
+                        if (this.Pawn.guest.GuestStatus != GuestStatus.Slave)
                         {
                             this.Pawn.guest.SetGuestStatus(linkedPawn.Faction, GuestStatus.Slave);
                         }
-                    }
+                    }                    
                 }
                 else
                 {
                     lichStrike++;
-                }
+                }                
                 if (!necroValid && lichStrike > 2)
                 {
                     if (base.Pawn.Map != null)
@@ -157,7 +166,7 @@ namespace TorannMagic
                     { 
                         for (int i = 0; i < needs.Count; i++)
                         {
-                            if (needs[i]?.def == NeedDefOf.Food || needs[i]?.def?.defName == "Mood" || needs[i]?.def?.defName == "Suppression")
+                            if (needs[i]?.def == NeedDefOf.Food || nonStandardNeedsToAutoFulfill.Contains(needs[i]?.def?.defName))
                             {
                                 needs[i].CurLevel = needs[i].MaxLevel;
                             }
@@ -227,8 +236,15 @@ namespace TorannMagic
                             Hediff rec = enumerator.Current;
                             if (rec.TendableNow()) // && !currentTendable.IsPermanent()
                             {
-                                TM_Action.TendWithoutNotice(rec, 1f, 1f);                                
-                                //rec.Tended(1, 1);
+                                if (rec.Bleeding && rec is Hediff_MissingPart)
+                                {
+                                    Traverse.Create(root: rec).Field(name: "isFreshInt").SetValue(false);
+                                    num--;
+                                }
+                                else
+                                {
+                                    TM_Action.TendWithoutNotice(rec, 1f, 1f);
+                                }
                             }
                         }
                     }

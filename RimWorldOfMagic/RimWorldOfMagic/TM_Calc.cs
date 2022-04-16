@@ -12,6 +12,8 @@ using AbilityUser;
 using TorannMagic.Enchantment;
 using System.Text;
 using TorannMagic.TMDefs;
+using System.Reflection;
+using TorannMagic.Golems;
 
 namespace TorannMagic
 {
@@ -170,12 +172,93 @@ namespace TorannMagic
             return false;
         }
 
+        public static bool IsGolem(Pawn p)
+        {
+            if(p != null)
+            {
+                TMPawnGolem pg = p as TMPawnGolem;
+                if(pg != null)
+                {
+                    return true;
+                }
+                CompGolem cg = p.TryGetComp<CompGolem>();
+                if(cg != null)
+                {
+                    return true;
+                }
+                if(p.health != null && p.health.hediffSet != null)
+                {
+                    if(p.health.hediffSet.HasHediff(TorannMagicDefOf.TM_GolemHD))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool IsGolemBuilding(Thing b)
+        {
+            if(b != null && b is Building)
+            {
+                Building_TMGolemBase gb = b as Building_TMGolemBase;
+                if(gb != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static bool HasHateHediff(Pawn pawn)
         {
             if(pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_HateHD_I"), false) || pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_HateHD_II"), false) || pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_HateHD_III"), false) ||
                 pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_HateHD"), false) || pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_HateHD_IV"), false) || pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_HateHD_V"), false))
             {
                 return true;
+            }
+            return false;
+        }
+
+        public static Hediff GetLinkedHediff(Pawn p, HediffDef starter)
+        {
+            if(starter == null)
+            {
+                return null;
+            }
+            Hediff outHediff = null;
+            if(p != null && p.health != null && p.health.hediffSet != null)
+            {
+                if(p.health.hediffSet.HasHediff(starter, false))
+                {
+                    return p.health.hediffSet.GetFirstHediffOfDef(starter);
+                }
+                else
+                {
+                    foreach(Hediff h in p.health.hediffSet.hediffs)
+                    {
+                        if(h.def.defName.StartsWith(starter.defName))
+                        {
+                            return h;
+                        }
+                    }
+                }
+            }
+            return outHediff;
+        }
+
+        public static bool IsWall(Thing t)
+        {
+            if(t != null && t is Building)
+            {
+                Building b = t as Building;
+                if (b.def.passability == Traversability.Impassable && b.def.holdsRoof)
+                {
+                    if (t.def.defName.ToLower().Contains("wall") || (t.def.label.ToLower().Contains("wall")))
+                    {
+                        return true;
+                    }
+                }
             }
             return false;
         }
@@ -320,6 +403,24 @@ namespace TorannMagic
             return false;
         }
 
+        public static bool IsEmpath(Pawn pawn)
+        {
+            if (pawn.story != null && pawn.story.traits != null && pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Empath))
+            {
+                return true;
+            }
+            if (pawn.health != null && pawn.health.hediffSet != null && pawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_EmpathHD) != null)
+            {
+                return true;
+            }
+            CompAbilityUserMagic comp = pawn.TryGetComp<CompAbilityUserMagic>();
+            if(comp != null && comp.customClass != null && comp.customClass.classAbilities.Contains(TorannMagicDefOf.TM_Empathy))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static bool IsCrossClass(Pawn pawn, bool forMagic)
         {
             if (pawn.story != null && pawn.story.traits != null)
@@ -341,6 +442,151 @@ namespace TorannMagic
             }
 
             return false;
+        }
+
+        public static bool HasResourcesForAbility(Pawn p, TMAbilityDef ability)
+        {
+            if(ability.manaCost > 0)
+            {
+                CompAbilityUserMagic comp = p.TryGetComp<CompAbilityUserMagic>();
+                if(comp == null)
+                {
+                    return false;
+                }
+                if(comp.Mana == null)
+                {
+                    return false;
+                }
+                if(comp.Mana.CurLevel < comp.ActualManaCost(ability))
+                {
+                    return false;
+                }
+            }
+            if(ability.staminaCost > 0)
+            {
+                CompAbilityUserMight comp = p.TryGetComp<CompAbilityUserMight>();
+                if (comp == null)
+                {
+                    return false;
+                }
+                if (comp.Stamina == null)
+                {
+                    return false;
+                }
+                if (comp.Stamina.CurLevel < comp.ActualStaminaCost(ability))
+                {
+                    return false;
+                }
+            }
+            if(ability.chiCost > 0)
+            {
+                CompAbilityUserMight comp = p.TryGetComp<CompAbilityUserMight>();
+                if (comp == null)
+                {
+                    return false;
+                }
+                if(p.health == null || p.health.hediffSet == null)
+                {
+                    return false;
+                }
+                Hediff chi = p.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_ChiHD);
+                if(chi == null)
+                {
+                    return false;
+                }
+                if(chi.Severity < comp.ActualChiCost(ability))
+                {
+                    return false;
+                }
+            }
+            if(ability.bloodCost > 0)
+            {
+                CompAbilityUserMagic comp = p.TryGetComp<CompAbilityUserMagic>();
+                if (comp == null)
+                {
+                    return false;
+                }
+                if (p.health == null || p.health.hediffSet == null)
+                {
+                    return false;
+                }
+                Hediff blood = p.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_BloodHD);
+                if (blood == null)
+                {
+                    return false;
+                }
+                MagicAbility ma = (MagicAbility)comp.AbilityData.AllPowers.FirstOrDefault((PawnAbility x) => x.Def == ability);
+                if(ma == null)
+                {
+                    return false;
+                }
+                if (blood.Severity < ma.ActualBloodCost)
+                {
+                    return false;
+                }
+            }
+            if(ability.requiredHediff != null)
+            {
+                if(p.health == null || p.health.hediffSet == null)
+                {
+                    return false;
+                }
+                Hediff hd = p.health.hediffSet.GetFirstHediffOfDef(ability.requiredHediff);
+                if (hd == null)
+                {
+                    return false;
+                }
+                if(hd.Severity < ability.hediffCost)
+                {
+                    return false;
+                }
+            }
+            if(ability.requiredNeed != null)
+            {
+                if(p.needs == null || p.needs.AllNeeds == null)
+                {
+                    return false;
+                }
+                Need nd = p.needs.TryGetNeed(ability.requiredNeed);
+                if(nd == null)
+                {
+                    return false;
+                }
+                if(nd.CurLevel < ability.needCost)
+                {
+                    return false;
+                }
+            }
+            if(ability.requiredWeaponsOrCategories != null && ability.requiredWeaponsOrCategories.Count > 0)
+            {
+                if(p.equipment == null)
+                {
+                    return false;
+                }
+                if(ability.IsRestrictedByEquipment(p))
+                {
+                    return false;
+                }
+            }
+            if(ability.requiredInspiration != null)
+            {
+                if(!p.Inspired)
+                {
+                    return false;
+                }
+                if(p.InspirationDef != ability.requiredInspiration)
+                {
+                    return false;
+                }
+            }
+            if(ability.requiresAnyInspiration)
+            {
+                if(!p.Inspired)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public static int GetMagesInFactionCount(Faction faction, bool countSlaves = false)
@@ -381,6 +627,56 @@ namespace TorannMagic
                 }
             }
             return false;
+        }
+
+        public static bool HasRuneCarverOnMap(Faction faction, Map map, bool countSlaves = false)
+        {
+            if (faction == null)
+            {
+                return false;
+            }
+            foreach (Pawn p in map.mapPawns.AllPawnsSpawned)
+            {
+                if(IsMagicUser(p) && p.IsSlave ? countSlaves : true)
+                {
+                    CompAbilityUserMagic comp = p.TryGetComp<CompAbilityUserMagic>();
+                    if(comp!= null && comp.MagicData != null)
+                    {
+                        MagicPower mp = comp.MagicData.ReturnMatchingMagicPower(TorannMagicDefOf.TM_RuneCarving);
+                        if(mp != null && mp.learned)
+                        {
+                            return true;
+                        }                            
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static List<Pawn> GolemancersInFaction(Faction faction)
+        {
+            if (faction == null)
+            {
+                return null;
+            }
+            List<Pawn> tmpList = new List<Pawn>();
+            tmpList.Clear();
+            foreach (Pawn p in PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_FreeColonists)
+            {
+                if (IsMagicUser(p))
+                {
+                    CompAbilityUserMagic comp = p.TryGetComp<CompAbilityUserMagic>();
+                    if (comp != null && comp.MagicData != null)
+                    {
+                        MagicPower mp = comp.MagicData.ReturnMatchingMagicPower(TorannMagicDefOf.TM_Golemancy);
+                        if (mp != null && mp.learned)
+                        {
+                            tmpList.Add(p);
+                        }
+                    }
+                }
+            }
+            return tmpList;
         }
 
         public static int GetFightersInFactionCount(Faction faction, bool countSlaves = false)
@@ -647,6 +943,38 @@ namespace TorannMagic
             {
                 targetPawn = mapPawns[i];
                 if (targetPawn != null && !targetPawn.Dead && !targetPawn.Destroyed && !targetPawn.Downed)
+                {
+                    if (targetPawn.Faction == faction && (pawn.Position - targetPawn.Position).LengthHorizontal <= radius)
+                    {
+                        pawnList.Add(targetPawn);
+                        targetPawn = null;
+                    }
+                    else
+                    {
+                        targetPawn = null;
+                    }
+                }
+            }
+            if (pawnList.Count > 0)
+            {
+                return pawnList.RandomElement();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static Pawn FindNearbyOtherFactionPawn(Pawn pawn, Faction faction, int radius)
+        {
+            List<Pawn> mapPawns = pawn.Map.mapPawns.AllPawnsSpawned;
+            List<Pawn> pawnList = new List<Pawn>();
+            Pawn targetPawn = null;
+            pawnList.Clear();
+            for (int i = 0; i < mapPawns.Count; i++)
+            {
+                targetPawn = mapPawns[i];
+                if (targetPawn != null && !targetPawn.Dead && !targetPawn.Destroyed && !targetPawn.Downed && targetPawn != pawn)
                 {
                     if (targetPawn.Faction == faction && (pawn.Position - targetPawn.Position).LengthHorizontal <= radius)
                     {
@@ -1187,37 +1515,37 @@ namespace TorannMagic
 
         public static List<Pawn> FindPawnsNearTarget(Pawn pawn, int radius, IntVec3 targetCell, bool hostile)
         {
-            List<Pawn> mapPawns = pawn.Map.mapPawns.AllPawnsSpawned;
-            List<Pawn> pawnList = new List<Pawn>();
-            Pawn targetPawn = null;
-            pawnList.Clear();
-            for (int i = 0; i < mapPawns.Count; i++)
+            if (!pawn.DestroyedOrNull() && pawn.Spawned && pawn.Map != null)
             {
-                targetPawn = mapPawns[i];
-                if (targetPawn != null && !targetPawn.Dead && !targetPawn.Destroyed && !targetPawn.Downed)
+                List<Pawn> mapPawns = pawn.Map.mapPawns.AllPawnsSpawned;
+                List<Pawn> pawnList = new List<Pawn>();
+                Pawn targetPawn = null;
+                pawnList.Clear();
+                for (int i = 0; i < mapPawns.Count; i++)
                 {
-                    if (targetPawn != pawn && (targetCell - targetPawn.Position).LengthHorizontal <= radius)
+                    targetPawn = mapPawns[i];
+                    if (targetPawn != null && !targetPawn.Dead && !targetPawn.Destroyed && !targetPawn.Downed)
                     {
-                        if (hostile && targetPawn.HostileTo(pawn.Faction))
+                        if (targetPawn != pawn && (targetCell - targetPawn.Position).LengthHorizontal <= radius)
                         {
-                            pawnList.Add(targetPawn);
+                            if (hostile && targetPawn.HostileTo(pawn.Faction))
+                            {
+                                pawnList.Add(targetPawn);
+                            }
+                            else if (!hostile && !targetPawn.HostileTo(pawn.Faction))
+                            {
+                                pawnList.Add(targetPawn);
+                            }
                         }
-                        else if(!hostile && !targetPawn.HostileTo(pawn.Faction))
-                        {
-                            pawnList.Add(targetPawn);
-                        }
+                        targetPawn = null;
                     }
-                    targetPawn = null;                    
+                }
+                if (pawnList.Count > 0)
+                {
+                    return pawnList;
                 }
             }
-            if (pawnList.Count > 0)
-            {
-                return pawnList;
-            }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static bool HasLoSFromTo(IntVec3 root, LocalTargetInfo targ, Thing caster, float minRange, float maxRange)
@@ -1368,9 +1696,9 @@ namespace TorannMagic
             {
                 targetPawn = mapPawns[i];
                 if (targetPawn != null && !targetPawn.Dead && !targetPawn.Destroyed)
-                {
+                {                    
                     if (faction != null && !sameFaction)
-                    {
+                    {                        
                         if ((targetPawn.Position - center).LengthHorizontal <= radius)
                         {
                             if (targetPawn.Faction != null)
@@ -1397,10 +1725,13 @@ namespace TorannMagic
                         }
                     }
                     else if(faction != null && sameFaction)
-                    {
+                    {                        
                         if (targetPawn.Faction != null && targetPawn.Faction == faction && (targetPawn.Position - center).LengthHorizontal <= radius)
                         {
-                            pawnList.Add(targetPawn);
+                            if (!targetPawn.IsQuestLodger() && !targetPawn.IsQuestHelper())
+                            {
+                                pawnList.Add(targetPawn);
+                            } 
                             targetPawn = null;
                         }
                         else
@@ -1430,6 +1761,52 @@ namespace TorannMagic
             {
                 return null;
             }
+        }
+
+        public static List<Pawn> FindAllHostilePawnsAround(Map map, IntVec3 center, float radius, Faction faction)
+        {
+            List<Pawn> tmpList = FindAllPawnsAround(map, center, radius);
+            if(tmpList != null && tmpList.Count > 0)
+            {
+                List<Pawn> enemyList = new List<Pawn>();
+                enemyList.Clear();
+                foreach(Pawn p in tmpList)
+                {
+                    if(p.HostileTo(faction))
+                    {
+                        enemyList.Add(p);
+                    }
+                }
+                return enemyList;
+            }
+            return tmpList;
+        }
+
+        public static Building FindNearestWall(Map map, IntVec3 center, Faction faction = null)
+        {
+            List<Thing> mapBuildings = map.listerThings.AllThings.Where((Thing x) => x is Building && (x.Position - center).LengthHorizontal <= 1.4f).ToList();
+            if(mapBuildings != null && mapBuildings.Count > 0 )
+            {
+                foreach(Thing t in mapBuildings)
+                {
+                    Building b = t as Building;
+                    if(TM_Calc.IsWall(t))
+                    {
+                        if(faction != null)
+                        {
+                            if (faction == b.Faction)
+                            {
+                                return b;
+                            }
+                        }
+                        else
+                        {
+                            return b;
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
         public static Thing GetTransmutableThingFromCell(IntVec3 cell, Pawn enchanter, out bool flagRawResource, out bool flagStuffItem, out bool flagNoStuffItem, out bool flagNutrition, out bool flagCorpse, bool manualCast = false)
@@ -1622,6 +1999,10 @@ namespace TorannMagic
             if (compMagic != null)
             {
                 penetration += (compMagic.arcaneDmg - 1);
+                if(compMagic.MagicData != null && compMagic.MagicData.GetSkill_Versatility(TorannMagicDefOf.TM_Empathy) != null)
+                {
+                    penetration += compMagic.MagicData.GetSkill_Versatility(TorannMagicDefOf.TM_Empathy).level * .05f;
+                }
             }
 
             CompAbilityUserMight compMight = pawn.GetComp<CompAbilityUserMight>();
@@ -2996,77 +3377,214 @@ namespace TorannMagic
             return tempAbility;
         }
 
-        public static int GetMightSkillLevel(Pawn caster, List<MightPowerSkill> power, string skillLabel, string suffix, bool canCopy = true)
+        public static int GetSkillPowerLevel(Pawn caster, TMAbilityDef ability, bool canCopy = true)
         {
-            int val = 0;
-            string label = skillLabel + suffix;
-            CompAbilityUserMight comp = caster.GetComp<CompAbilityUserMight>();
-            var mps = power.FirstOrDefault((MightPowerSkill x) => x.label == label);
-            if (mps != null)
-            {
-                val = mps.level;
-                if (canCopy && val == 0)
-                {
-                    if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
-                    {
-                        label = "TM_Mimic" + suffix;
-                        val = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == label).level;
-                    }
-                    if ((caster.story.traits.HasTrait(TorannMagicDefOf.TM_Wayfarer) || (caster.story.traits.HasTrait(TorannMagicDefOf.ChaosMage) || (comp.customClass != null && comp.customClass.classFighterAbilities.Contains(TorannMagicDefOf.TM_FieldTraining))) && comp.MightData.MightPowersW.FirstOrDefault((MightPower x) => x.abilityDef == TorannMagicDefOf.TM_WayfarerCraft).learned))
-                    {
-                        label = "TM_FieldTraining" + suffix;
+            return GetSkillLevel(caster, ability, "_pwr", canCopy);
+        }
 
-                        if (comp.MightData.MightPowerSkill_FieldTraining.FirstOrDefault((MightPowerSkill x) => x.label == label).level >= 13)
-                        {
-                            val = 2;
-                        }
-                        else if (comp.MightData.MightPowerSkill_FieldTraining.FirstOrDefault((MightPowerSkill x) => x.label == label).level >= 9)
-                        {
-                            val = 1;
-                        }
+        public static int GetSkillVersatilityLevel(Pawn caster, TMAbilityDef ability, bool canCopy = true)
+        {
+            return GetSkillLevel(caster, ability, "_ver", canCopy);
+        }
+
+        public static int GetSkillEfficiencyLevel(Pawn caster, TMAbilityDef ability, bool canCopy = true)
+        {
+            return GetSkillLevel(caster, ability, "_eff", canCopy);
+        }
+
+        public static int GetSkillLevel(Pawn caster, TMAbilityDef ability, string suffix, bool canCopy = true)
+        {
+            int level = 0;
+            bool flagMagic = TM_Calc.IsMagicUser(caster);
+            bool flagMight = TM_Calc.IsMightUser(caster);            
+            
+            if(flagMagic && flagMight)
+            {
+                level = GetMagicSkillLevel(caster, ability, suffix, canCopy);
+                int tmpLevel = GetMightSkillLevel(caster, ability, suffix, canCopy);
+                level = level >= tmpLevel ? level : tmpLevel;
+            }
+            else if(flagMagic)
+            {
+                level = GetMagicSkillLevel(caster, ability, suffix, canCopy);
+            }
+            else if(flagMight)
+            {
+                level = GetMightSkillLevel(caster, ability, suffix, canCopy);
+            }
+            return level;
+        }
+
+        public static int GetMightSkillLevel(Pawn caster, TMAbilityDef ability, string suffix, bool canCopy) //, List<MightPowerSkill> power, string skillLabel, string suffix, bool canCopy = true)
+        {
+            MightPowerSkill mightSkill = null;
+            int level = 0;
+            CompAbilityUserMight comp = caster.TryGetComp<CompAbilityUserMight>();
+            if (comp != null && comp.MightData != null)
+            {
+                if (suffix == "_pwr")
+                {
+                    mightSkill = comp.MightData.GetSkill_Power(ability);
+                }
+                else if (suffix == "_ver")
+                {
+                    mightSkill = comp.MightData.GetSkill_Versatility(ability);
+                }
+                else if (suffix == "_eff")
+                {
+                    mightSkill = comp.MightData.GetSkill_Efficiency(ability);
+                }
+                else
+                {
+                    return 0;
+                }
+                if (mightSkill != null)
+                {
+                    level = mightSkill.level;
+                }
+                CompAbilityUserMight mimicComp = caster.TryGetComp<CompAbilityUserMight>();
+                if (canCopy && mimicComp != null && mimicComp.IsMightUser && ability == mimicComp.mimicAbility)
+                {
+                    string mimicLabel = "TM_Mimic" + suffix;
+                    level = mimicComp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == mimicLabel).level;
+                }
+                int ftLevel = 0;
+                if (suffix == "_pwr" || suffix == "_ver")
+                {
+                    string ftLabel = "TM_FieldTraining" + suffix;
+                    ftLevel = (int)(comp.MightData.MightPowerSkill_FieldTraining.FirstOrDefault((MightPowerSkill x) => x.label == ftLabel).level);
+                    if (ftLevel >= 13)
+                    {
+                        level = level >= 2 ? level : 2;
+                    }
+                    else if (ftLevel >= 9)
+                    {
+                        level = level >= 1 ? level : 1;
                     }
                 }
                 ModOptions.SettingsRef settingsRef = new ModOptions.SettingsRef();
                 if (settingsRef.AIHardMode && !caster.IsColonist)
                 {
-                    val = 3;
+                    level = 3;
                 }
             }
-            return val;
+            return level;
+
+            //int val = 0;
+            //string label = skillLabel + suffix;
+            //CompAbilityUserMight comp = caster.GetComp<CompAbilityUserMight>();
+            //var mps = power.FirstOrDefault((MightPowerSkill x) => x.label == label);
+            //if (mps != null)
+            //{
+            //    val = mps.level;
+            //    if (canCopy && val == 0)
+            //    {
+            //        if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            //        {
+            //            label = "TM_Mimic" + suffix;
+            //            val = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == label).level;
+            //        }
+            //        if ((caster.story.traits.HasTrait(TorannMagicDefOf.TM_Wayfarer) || (caster.story.traits.HasTrait(TorannMagicDefOf.ChaosMage) || (comp.customClass != null && comp.customClass.classFighterAbilities.Contains(TorannMagicDefOf.TM_FieldTraining))) && comp.MightData.MightPowersW.FirstOrDefault((MightPower x) => x.abilityDef == TorannMagicDefOf.TM_WayfarerCraft).learned))
+            //        {
+            //            label = "TM_FieldTraining" + suffix;
+
+            //            if (comp.MightData.MightPowerSkill_FieldTraining.FirstOrDefault((MightPowerSkill x) => x.label == label).level >= 13)
+            //            {
+            //                val = 2;
+            //            }
+            //            else if (comp.MightData.MightPowerSkill_FieldTraining.FirstOrDefault((MightPowerSkill x) => x.label == label).level >= 9)
+            //            {
+            //                val = 1;
+            //            }
+            //        }
+            //    }
+            //    ModOptions.SettingsRef settingsRef = new ModOptions.SettingsRef();
+            //    if (settingsRef.AIHardMode && !caster.IsColonist)
+            //    {
+            //        val = 3;
+            //    }
+            //}
+            //return val;
         }
 
-        public static int GetMagicSkillLevel(Pawn caster, List<MagicPowerSkill> power, string skillLabel, string suffix, bool canCopy = true)
+        public static int GetMagicSkillLevel(Pawn caster, TMAbilityDef ability, string suffix, bool canCopy) //, List<MagicPowerSkill> power, string skillLabel, string suffix, bool canCopy = true)
         {
-            int val = 0;
-            string label = skillLabel + suffix;
-            CompAbilityUserMagic comp = caster.GetComp<CompAbilityUserMagic>();
-            if (comp != null && comp.IsMagicUser)
+            MagicPowerSkill magicSkill = null;
+            int level = 0;
+            CompAbilityUserMagic comp = caster.TryGetComp<CompAbilityUserMagic>();
+            if (comp != null && comp.MagicData != null)
             {
-                var mps = power.FirstOrDefault((MagicPowerSkill x) => x.label == label);
-                if (mps != null)
+                if (suffix == "_pwr")
                 {
-                    val = mps.level;
-                    if (canCopy && val == 0)
-                    {
-                        if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
-                        {
-                            label = "TM_Mimic" + suffix;
-                            val = caster.GetComp<CompAbilityUserMight>().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == label).level;
-                        }
-                        if ((caster.story.traits.HasTrait(TorannMagicDefOf.TM_Wanderer) || (caster.story.traits.HasTrait(TorannMagicDefOf.ChaosMage) || (comp.customClass != null && comp.customClass.classMageAbilities.Contains(TorannMagicDefOf.TM_Cantrips))) && comp.MagicData.MagicPowersW.FirstOrDefault((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Cantrips).learned))
-                        {
-                            label = "TM_Cantrips" + suffix;
-                            val = (int)((comp.MagicData.MagicPowerSkill_Cantrips.FirstOrDefault((MagicPowerSkill x) => x.label == label).level) / 5);
-                        }
-                    }
-                    ModOptions.SettingsRef settingsRef = new ModOptions.SettingsRef();
-                    if (settingsRef.AIHardMode && !caster.IsColonist)
-                    {
-                        val = 3;
-                    }
+                    magicSkill = comp.MagicData.GetSkill_Power(ability);
+                }
+                else if (suffix == "_ver")
+                {
+                    magicSkill = comp.MagicData.GetSkill_Versatility(ability);
+                }
+                else if (suffix == "_eff")
+                {
+                    magicSkill = comp.MagicData.GetSkill_Efficiency(ability);
+                }
+                else
+                {
+                    return 0;
+                }
+                if (magicSkill != null)
+                {
+                    level = magicSkill.level;
+                }
+                CompAbilityUserMight mimicComp = caster.TryGetComp<CompAbilityUserMight>();
+                if (canCopy && mimicComp != null && mimicComp.IsMightUser && ability == mimicComp.mimicAbility)
+                {
+                    string mimicLabel = "TM_Mimic" + suffix;
+                    level = mimicComp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == mimicLabel).level;
+                }
+                int cantripLevel = 0;
+                if (suffix == "_pwr" || suffix == "_ver")
+                {
+                    string cantripLabel = "TM_Cantrips" + suffix;
+                    cantripLevel = (int)((comp.MagicData.MagicPowerSkill_Cantrips.FirstOrDefault((MagicPowerSkill x) => x.label == cantripLabel).level) / 5);
+                }
+                level = cantripLevel > level ? cantripLevel : level;
+                ModOptions.SettingsRef settingsRef = new ModOptions.SettingsRef();
+                if (settingsRef.AIHardMode && !caster.IsColonist)
+                {
+                    level = 3;
                 }
             }
-            return val;
+            return level;
+
+            //int val = 0;
+            //string label = skillLabel + suffix;
+            //CompAbilityUserMagic comp = caster.GetComp<CompAbilityUserMagic>();
+            //if (comp != null && comp.IsMagicUser)
+            //{
+            //    var mps = power.FirstOrDefault((MagicPowerSkill x) => x.label == label);
+            //    if (mps != null)
+            //    {
+            //        val = mps.level;
+            //        if (canCopy && val == 0)
+            //        {
+            //            if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            //            {
+            //                label = "TM_Mimic" + suffix;
+            //                val = caster.GetComp<CompAbilityUserMight>().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == label).level;
+            //            }
+            //            if ((caster.story.traits.HasTrait(TorannMagicDefOf.TM_Wanderer) || (caster.story.traits.HasTrait(TorannMagicDefOf.ChaosMage) || (comp.customClass != null && comp.customClass.classMageAbilities.Contains(TorannMagicDefOf.TM_Cantrips))) && comp.MagicData.MagicPowersW.FirstOrDefault((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Cantrips).learned))
+            //            {
+            //                label = "TM_Cantrips" + suffix;
+            //                val = (int)((comp.MagicData.MagicPowerSkill_Cantrips.FirstOrDefault((MagicPowerSkill x) => x.label == label).level) / 5);
+            //            }
+            //        }
+            //        ModOptions.SettingsRef settingsRef = new ModOptions.SettingsRef();
+            //        if (settingsRef.AIHardMode && !caster.IsColonist)
+            //        {
+            //            val = 3;
+            //        }
+            //    }
+            //}
+            //return val;
         }
 
         public static bool IsIconAbility_02(AbilityUser.AbilityDef def)
@@ -3446,6 +3964,21 @@ namespace TorannMagic
             return result;
         }
 
+        public static bool IsUsingCustomWeaponCategory(Pawn p, string str)
+        {
+            bool result = false;
+            if (p != null && p.equipment != null && p.equipment.Primary != null)
+            {
+                Thing wpn = p.equipment.Primary;
+                if (TM_Data.CustomWeaponCategoryList(str).Contains(wpn.def.defName))
+                {
+                    //Log.Message("weapon found in custom defnames");
+                    result = true;
+                }
+            }
+            return result;
+        }
+
         public static float GetSkillDamage(Pawn p)
         {
             float result = 0;
@@ -3696,12 +4229,56 @@ namespace TorannMagic
             return true;            
         }
 
+        public static LocalTargetInfo FindClosestCellPlus1VisibleToTarget(Pawn p, LocalTargetInfo t, bool requireLoS = true)
+        {
+            LocalTargetInfo tmp = p.Position;
+            IntVec3 bestCell = p.Position;
+            for(int i =0;i < 8;i++)
+            {
+                IntVec3 cell = p.Position + GenAdj.AdjacentCells8WayRandomized()[i];
+                if (cell.Walkable(p.Map) && cell.Standable(p.Map))
+                {
+                    if ((cell - t.Cell).LengthHorizontal > (bestCell - t.Cell).LengthHorizontal)
+                    {
+                        if (requireLoS)
+                        {
+                            if (TM_Calc.HasLoSFromTo(cell, t, p, 0, 5f))
+                            {
+                                bestCell = cell;
+                            }
+                        }
+                        else
+                        {
+                            bestCell = cell;
+                        }
+                    }
+                }
+            }
+            tmp = bestCell;
+            
+            return tmp;
+        }
+
         public static LocalTargetInfo FindWalkableCellNextTo(IntVec3 cell, Map map)
         {
             List<IntVec3> cellList = GenAdjFast.AdjacentCells8Way(cell);
             for (int i = 0; i < cellList.Count; i++)
             {
                 if (cellList[i] != default(IntVec3) && cellList[i].InBounds(map) && cellList[i].Walkable(map) && !cellList[i].Fogged(map))
+                {
+                    cell = cellList[i];
+                    break;
+                }
+            }
+            return cell;
+        }
+
+        public static LocalTargetInfo FindValidCellWithinRange(IntVec3 cell, Map map, float range)
+        {
+            List<IntVec3> cellList = GenRadial.RadialCellsAround(cell, range, true).InRandomOrder().ToList();
+            for (int i = 0; i < cellList.Count; i++)
+            {
+                if (cellList[i] != default(IntVec3) && cellList[i].InBounds(map) && !cellList[i].Fogged(map))
                 {
                     cell = cellList[i];
                     break;
@@ -3769,7 +4346,7 @@ namespace TorannMagic
                             }
                         }
                     }
-                    target = potentialPawns?.RandomElement();
+                    target = potentialPawns.Count > 0 ? potentialPawns.RandomElement() : null;
                 }
                 else if (autocasting.GetTargetType == typeof(Building))
                 {
@@ -3807,7 +4384,7 @@ namespace TorannMagic
                             }
                         }
                     }
-                    target = potentialBuildings?.RandomElement();
+                    target = potentialBuildings.Count > 0 ? potentialBuildings.RandomElement() : null;
                 }
                 else if (autocasting.GetTargetType == typeof(Corpse))
                 {
@@ -3815,7 +4392,7 @@ namespace TorannMagic
                                                                where (x.GetType() == typeof(Corpse) && (x.Position - caster.Position).LengthHorizontal >= autocasting.minRange &&
                                                                autocasting.maxRange > 0 ? (x.Position - caster.Position).LengthHorizontal <= autocasting.maxRange : true)
                                                                select x as Corpse;
-                    target = nearbyThings?.RandomElement();
+                    target = nearbyThings?.Count() > 0 ? nearbyThings.RandomElement() : null;
                 }
                 else if (autocasting.GetTargetType == typeof(ThingWithComps))
                 {
@@ -3824,7 +4401,7 @@ namespace TorannMagic
                                                       autocasting.maxRange > 0 ? (x.Position - caster.Position).LengthHorizontal <= autocasting.maxRange : true &&
                                                       autocasting.includeSelf ? true : x != caster)
                                                       select x as ThingWithComps;
-                    target = nearbyThings?.RandomElement();
+                    target = nearbyThings?.Count() > 0 ? nearbyThings.RandomElement() : null;
                 }
                 else
                 {
@@ -3833,7 +4410,7 @@ namespace TorannMagic
                                                       autocasting.maxRange > 0 ? (x.Position - caster.Position).LengthHorizontal <= autocasting.maxRange : true &&
                                                       autocasting.includeSelf ? true : x != caster)
                                                       select x;
-                    target = nearbyThings?.RandomElement();
+                    target = nearbyThings?.Count() > 0 ? nearbyThings.RandomElement() : null;
                 }
                 
             }
@@ -3841,8 +4418,298 @@ namespace TorannMagic
             {
                 target = potentialTarget.Cell;
             }
-            
             return target;
+        }
+
+        public static List<Building> FindConnectedWalls(Building start, float maxAllowedDistance = 1.4f, float maxDistanceFromStart = 50, bool matchFaction = true)
+        {
+            Map map = start.Map;
+            List<Building> connectedBuildings = new List<Building>();
+            connectedBuildings.Clear();
+            connectedBuildings.Add(start);
+            List<Building> newBuildings = new List<Building>();
+            newBuildings.Clear();
+            newBuildings.Add(start);
+            //List<Building> lastList = new List<Building>();
+            //lastList.Clear();
+            //lastList.Add(start);
+            IEnumerable<Building> allThings = from def in map.listerThings.AllThings
+                                       where (def is Building && TM_Calc.IsWall(def) && (def.Position - start.Position).LengthHorizontal <= maxDistanceFromStart)
+                                       select def as Building;
+            List <Building> addedBuilding = new List<Building>();
+            for (int i = 0; i < 200; i++)
+            {                
+                addedBuilding.Clear();
+                foreach (Building b in newBuildings)
+                {
+                    foreach (Building t in allThings)
+                    {
+                        if ((t.Position - b.Position).LengthHorizontal <= maxAllowedDistance && !connectedBuildings.Contains(t))
+                        {
+                            connectedBuildings.Add(t);
+                            addedBuilding.Add(t);
+                        }
+                    }
+                    //IEnumerable<Building> tmpList = allThings.Except(connectedBuildings);
+                    //allThings = tmpList;
+                }
+                //lastList.Clear();
+                //lastList.AddRange(newBuildings);
+                newBuildings.Clear();
+                newBuildings.AddRange(addedBuilding);
+                if(newBuildings.Count <= 0)
+                {
+                    break;
+                }
+            }
+            //Log.Message("there are " + connectedBuildings.Count + " connected wall segments");
+            return connectedBuildings;
+        }
+
+        public static List<IntVec3> FindTPath(Thing from, Thing to,  Faction faction = null) //out List<IntVec3> connectedCells,
+        {
+            //use a structure to record path parameters
+            //look for any transmitter nearby 
+            //nearby transmitters are considered a possible path
+            //add nearby path to list of paths
+            //multiple nearby transmitters create a new path structure that gets enumerated
+            //terminate a paths if no nearby transmitter is found
+
+            Map map = from.Map;
+            List<IntVec3> allCells = new List<IntVec3>();
+            List<IntVec3> startList = new List<IntVec3>();
+            List<IntVec3> bestPath = new List<IntVec3>();
+            List<TPath> pathFinder = new List<TPath>();
+
+            allCells.Clear();
+            pathFinder.Clear();
+
+            startList.Add(from.Position);
+            pathFinder.Add(new TPath(0, 0, false, from.Position, startList));
+
+            bool pathFound = false;
+            int bestPathIndex = 0;
+
+            for (int i = 0; i < 300; i++) //fail after 300 path attempts
+            {
+                for (int j = 0; j < pathFinder.Count; j++)
+                {
+                    if (!pathFinder[j].ended)
+                    {
+                        List<IntVec3> cellList = GenRadial.RadialCellsAround(pathFinder[j].currentCell, 1f, true).ToList();
+                        List<IntVec3> validCells = new List<IntVec3>();
+                        validCells.Clear();
+                        //Log.Message("" + cellList.Count.ToString());
+                        for (int k = 0; k < cellList.Count; k++)
+                        {
+                            //CELLLIST is all the cells around the CURRENT cell.
+                            Building wall = CellWall(cellList[k], map);
+                            if (!allCells.Contains(cellList[k]) && wall != null)
+                            {
+                                if(faction != null)
+                                {
+                                    if(faction == wall.Faction)
+                                    {
+                                        allCells.Add(cellList[k]);
+                                        validCells.Add(cellList[k]);
+                                    }
+                                }
+                                else
+                                {
+                                    allCells.Add(cellList[k]);
+                                    validCells.Add(cellList[k]);
+                                }                                
+                            }
+                        }
+                        if (validCells.Count > 0)
+                        {
+                            //IF WE FOUND MORE THAN 1 "VALID" cell around the "CURRENTCELL" we loop through those cells
+                            for (int k = 0; k < validCells.Count; k++)
+                            {
+                                if (k == 0)
+                                {
+                                    //Check the first valid cell
+                                    //continue path in a single direction; additional possible paths create a branch
+                                    pathFinder[j].pathList.Add(validCells[k]);
+                                    pathFinder[j] = new TPath(pathFinder[j].pathParent, pathFinder[j].pathParentSplitIndex, false, validCells[k], pathFinder[j].pathList);
+
+                                    if (to.Position == validCells[k])
+                                    {
+                                        pathFound = true;
+                                        bestPathIndex = j;
+                                    }
+                                }
+                                else
+                                {
+                                    //create new paths
+                                    List<IntVec3> newList = new List<IntVec3>();
+                                    newList.Clear();
+                                    newList.Add(validCells[k]);
+                                    pathFinder.Add(new TPath(j, pathFinder[j].pathList.Count, false, validCells[k], newList));
+                                    if (to.Position == validCells[k])
+                                    {
+                                        pathFound = true;
+                                        bestPathIndex = j;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //end path
+                            pathFinder[j] = new TPath(pathFinder[j].pathParent, pathFinder[j].pathParentSplitIndex, true, pathFinder[j].currentCell, pathFinder[j].pathList);
+                        }
+                    }
+                }
+
+                if (pathFound)
+                {
+                    //Evaluate best path, reverse, and return
+                    bestPath = GetBestPath(pathFinder, bestPathIndex);
+                    break;
+                }
+            }
+            //connectedCells = allCells;
+            return bestPath;
+        }
+
+        public static Building CellWall(IntVec3 cell, Map map)
+        {
+            //Determines if a cell has a wall built on it
+            Building wall = null;
+            if (cell != default(IntVec3) && cell.InBounds(map))
+            {
+                List<Thing> tList = cell.GetThingList(map);
+                if(tList != null && tList.Count > 0)
+                {
+                    foreach(Thing t in tList)
+                    {
+                        if(IsWall(t))
+                        {
+                            wall = t as Building;
+                            break;
+                        }
+                    }
+                }
+            }
+            return wall;
+        }
+
+        public static List<IntVec3> GetBestPath(List<TPath> pathFinder, int index)
+        {
+            //Evaluates path structure from ending cell to start cell
+            //First evaluated path always uses full list
+            //Following paths can be branched; eliminate excess cells from those lists 
+            //by recording when the valid path branches
+            List<IntVec3> tracebackList = new List<IntVec3>();
+
+            tracebackList.Clear();
+
+            bool tracebackComplete = false;
+            int parentIndexCount = pathFinder[index].pathList.Count;
+
+            while (!tracebackComplete)
+            {
+                List<IntVec3> tmpTrace = new List<IntVec3>();
+                tmpTrace.Clear();
+                //ignore index 0 (starting point)
+                if (index != 0)
+                {
+                    for (int i = 0; i < parentIndexCount; i++)
+                    {
+                        //construct the reverse path
+                        tmpTrace.Add(pathFinder[index].pathList[i]);
+                    }
+                }
+
+                if (index == 0)
+                {
+                    //finished return path
+                    tracebackComplete = true;
+                }
+                else
+                {
+                    //construct valid reverse path from point path branches from parent
+                    tmpTrace.Reverse();
+                    tracebackList.AddRange(tmpTrace);
+                    parentIndexCount = pathFinder[index].pathParentSplitIndex;
+                    index = pathFinder[index].pathParent;
+                }
+            }
+            tracebackList.Reverse();
+            tracebackList = SnipPath(tracebackList);
+            return tracebackList;
+        }
+
+         public static List<IntVec3> SnipPath(List<IntVec3> tracebackList)
+        {
+            IntVec3 last1Cell = default(IntVec3);
+            IntVec3 last2Cell = default(IntVec3);
+            for (int i = 0; i < tracebackList.Count; i++)
+            {
+                if (i > 0)
+                {
+                    last1Cell = tracebackList[i - 1];
+                    if (i > 1)
+                    {
+                        last2Cell = tracebackList[i - 2];
+                    }
+                }
+
+                if (last1Cell != default(IntVec3) && last2Cell != default(IntVec3))
+                {
+                    if ((last2Cell - tracebackList[i]).LengthHorizontal <= (last1Cell - tracebackList[i]).LengthHorizontal)
+                    {
+                        tracebackList.Remove(last1Cell);
+                    }
+                }
+                last1Cell = default(IntVec3);
+                last2Cell = default(IntVec3);
+            }
+
+            return tracebackList;
+        }
+
+        public static List<Vector3> IntVec3List_To_Vector3List(List<IntVec3> intVecList)
+        {
+            List<Vector3> vector3List = new List<Vector3>();
+            vector3List.Clear();
+            for (int i = 0; i < intVecList.Count; i++)
+            {
+                vector3List.Add(intVecList[i].ToVector3Shifted());
+            }
+            return vector3List;
+        }
+
+        public static bool DangerMusicMode
+        {
+            get
+            {
+                List<Map> maps = Find.Maps;
+                for (int i = 0; i < maps.Count; i++)
+                {
+                    if (maps[i].dangerWatcher.DangerRating == StoryDanger.High)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        public static bool IsAlterableWeather(Map map, out WeatherDef w)
+        {
+            bool result = false;
+            w = null;
+            if (map != null && map.weatherManager != null && map.weatherManager.curWeather != null)
+            {
+                w = map.weatherManager.curWeather;
+                if (w.defName == "SnowHard" || w.defName == "SnowGentle" || w.defName == "Rain" || w.defName == "RainyThunderstorm" || w.defName == "FoggyRain")
+                {
+                    result = true;
+                }
+            }
+            return result;
         }
     }
 }

@@ -287,10 +287,10 @@ namespace TorannMagic
                 {
                     //ignore
                 }
+
                 GenPlace.TryPlaceThing(technoWeapon, caster.Position, caster.Map, ThingPlaceMode.Direct, null, null);
                 Job job = new Job(JobDefOf.Equip, technoWeapon);
                 caster.jobs.TryTakeOrderedJob(job, JobTag.ChangingApparel);
-
             }
             else
             {
@@ -612,6 +612,36 @@ namespace TorannMagic
             }
         }
 
+        public static void DamageEntities_AoE(DamageDef type, float amount, float armorPen, Pawn caster, Pawn target, Map map, float radius, bool friendlyFire = false, BodyPartRecord hitPart = null, ThingDef weapon = null, bool centerFalloff = false)
+        {
+            if(caster != null && target != null)
+            {
+                float amt = Rand.Range(.75f, 1.25f) * amount;
+                if (radius > 0)
+                {
+                    List<Pawn> targetList = TM_Calc.FindAllPawnsAround(map, target.Position, radius);
+                    if (targetList != null && targetList.Count > 0)
+                    {
+                        foreach (Pawn p in targetList)
+                        {
+                            if (centerFalloff)
+                            {
+                                amt = (.5f * amt) + (.5f * ((p.Position - target.Position).LengthHorizontal / radius));
+                            }
+                            if (friendlyFire || p.Faction != caster.Faction)
+                            {                                
+                                TM_Action.DamageEntities(p, hitPart, amt, armorPen, type, caster);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    TM_Action.DamageEntities(target, hitPart, amt, armorPen, type, caster);
+                }
+            }
+        }
+
         public static void DoAction_ApplySplashDamage(DamageInfo dinfo, Pawn caster, Pawn target, Map map, int ver = 0)
         {
             bool multiplePawns = false;
@@ -761,6 +791,26 @@ namespace TorannMagic
             }
         }
 
+        public static void HealAllSickness(Pawn p)
+        {
+            if (p != null && p.health != null && p.health.hediffSet != null)
+            {
+                List<Hediff> removeHediffs = new List<Hediff>();
+                removeHediffs.Clear();
+                foreach (Hediff h in p.health.hediffSet.hediffs)
+                {
+                    if(h.def.makesSickThought)
+                    {
+                        removeHediffs.Add(h);
+                    }
+                }
+                foreach(Hediff r in removeHediffs)
+                {
+                    p.health.RemoveHediff(r);
+                }
+            }
+        }
+
         public static Thing SingleSpawnLoop(Pawn caster, SpawnThings spawnables, IntVec3 position, Map map, int duration, bool temporary, bool hostile = false, Faction spawnableFaction = null, bool hasFaction = true, ThingDef makeFromStuff = null)
         {
             bool flag = spawnables.def != null;
@@ -870,9 +920,12 @@ namespace TorannMagic
 
         public static TMPawnSummoned SpawnPawn(Pawn caster, SpawnThings spawnables, Faction faction, IntVec3 position, int duration, Map map)
         {
-            TMPawnSummoned newPawn = (TMPawnSummoned)PawnGenerator.GeneratePawn(spawnables.kindDef, faction);
+           TMPawnSummoned newPawn = (TMPawnSummoned)PawnGenerator.GeneratePawn(spawnables.kindDef, faction);
             newPawn.validSummoning = true;
-            newPawn.Spawner = caster;
+            if (caster != null)
+            {
+                newPawn.Spawner = caster;
+            }
             newPawn.Temporary = spawnables.temporary;
             newPawn.TicksToDestroy = duration;
             //Faction val = default(Faction);
@@ -1096,6 +1149,18 @@ namespace TorannMagic
             spawnthing.kindDef = assignDef;
             spawnthing.def = assignDef.race;
             return spawnthing;
+        }
+
+        public static void RemoveBodypart(Pawn p, BodyPartRecord part)
+        {
+            if(p != null && p.health != null && p.health.hediffSet != null)
+            {
+                HediffDef hediffDefFromDamage = HealthUtility.GetHediffDefFromDamage(TMDamageDefOf.DamageDefOf.TM_PartRemoval, p, part);
+                Hediff_Injury hediff_Injury = (Hediff_Injury)HediffMaker.MakeHediff(hediffDefFromDamage, p);
+                hediff_Injury.Part = part;
+                hediff_Injury.Severity = part.def.GetMaxHealth(p);
+                p.health.AddHediff(hediff_Injury);
+            }
         }
 
         public static void DamageEntities(Thing victim, BodyPartRecord hitPart, float amt, DamageDef type, Thing instigator)
@@ -1700,11 +1765,14 @@ namespace TorannMagic
 
         public static void DisplayShieldHit(Pawn shieldedPawn, DamageInfo dinfo)
         {
-            DisplayShield(shieldedPawn, dinfo.Amount, dinfo.Angle);
+            if (shieldedPawn != null && shieldedPawn.Map != null && shieldedPawn.Spawned)
+            {
+                DisplayShield(shieldedPawn, dinfo.Amount, dinfo.Angle);
+            }
         }
 
         public static void DisplayShield(Pawn shieldedPawn, float amount, float angle = 0f)
-        {
+        {            
             Vector3 impactAngleVect;
             SoundDefOf.EnergyShield_AbsorbDamage.PlayOneShot(new TargetInfo(shieldedPawn.Position, shieldedPawn.Map, false));
             impactAngleVect = Vector3Utility.HorizontalVectorFromAngle(angle);
@@ -1721,7 +1789,7 @@ namespace TorannMagic
 
         private static void DrawShieldHit(Pawn shieldedPawn, float magnitude, Vector3 impactAngleVect)
         {
-            bool flag = !shieldedPawn.Dead && !shieldedPawn.Downed;
+            bool flag = !shieldedPawn.Dead && !shieldedPawn.Downed && shieldedPawn.Graphic != null && shieldedPawn.Graphic.drawSize != null;
             if (flag)
             {
                 float num = Mathf.Lerp(1.2f, 1.55f, magnitude);
@@ -1729,7 +1797,7 @@ namespace TorannMagic
                 vector.y = Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead);
 
                 float angle = (float)Rand.Range(0, 360);
-                Vector3 s = new Vector3(1.7f, 1f, 1.7f);
+                Vector3 s = new Vector3(1.7f * shieldedPawn.Graphic.drawSize.magnitude, 1f, 1.7f * shieldedPawn.Graphic.drawSize.magnitude);
                 Matrix4x4 matrix = default(Matrix4x4);
                 matrix.SetTRS(vector, Quaternion.AngleAxis(angle, Vector3.up), s);
                 if (shieldedPawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_HediffShield) || shieldedPawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_HTLShieldHD) || shieldedPawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_MagicShieldHD))
@@ -1739,6 +1807,10 @@ namespace TorannMagic
                 else if (shieldedPawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_DemonScornHD) || shieldedPawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_DemonScornHD_I) || shieldedPawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_DemonScornHD_II) || shieldedPawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_DemonScornHD_III))
                 {
                     Graphics.DrawMesh(MeshPool.plane10, matrix, TM_RenderQueue.demonShieldMat, 0);
+                }
+                else if(shieldedPawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_SymbiosisHD) || shieldedPawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_OutOfBodyHD))
+                {
+                    Graphics.DrawMesh(MeshPool.plane10, matrix, TM_RenderQueue.redShieldMat, 0);
                 }
                 else
                 {
@@ -1849,10 +1921,16 @@ namespace TorannMagic
             }
             else if (flagStuffItem)
             {
-                //Log.Message("" + transmutateThing.LabelShort + " is made from " + transmutateThing.Stuff.label);
-                float transValue = transmutateThing.MarketValue;
+                float transValue = 1f;
+                if (transmutateThing.Stuff != null)
+                {
+                    transValue = transmutateThing.Stuff.BaseMarketValue;
+                }
+                //Log.Message("" + transmutateThing.LabelShort + " is made from " + transmutateThing.Stuff.label + " with a market value of " + transValue);
                 IEnumerable<ThingDef> enumerable = from def in DefDatabase<ThingDef>.AllDefs
-                                                   where (def.stuffProps != null && def.stuffProps.categories != null && def.stuffProps.categories.Contains(transmutateThing.Stuff.stuffProps.categories.RandomElement()))
+                                                   where (def.stuffProps != null && def.stuffProps.categories != null && 
+                                                   def.stuffProps.categories.Contains(transmutateThing.Stuff.stuffProps.categories.RandomElement()) &&
+                                                   def.BaseMarketValue <= (3f * transValue * (1f + (.1f * pwrVal))) && def.BaseMarketValue >= ((.1f + (.1f * pwrVal)) * transValue))
                                                    select def;
 
                 //foreach (ThingDef current in enumerable)
@@ -2507,8 +2585,8 @@ namespace TorannMagic
 
         public static GizmoResult DrawAutoCastForGizmo(Command_PawnAbility com, Rect rect, bool shrink, GizmoResult oldResult)
         {
-            ModOptions.SettingsRef settingsRef = new ModOptions.SettingsRef();
-            if (settingsRef.autocastEnabled && com.pawnAbility.Def.defName.Contains("TM_"))
+            ModOptions.SettingsRef settingsRef = new ModOptions.SettingsRef();            
+            if (settingsRef.autocastEnabled && com.pawnAbility.Def.defName.StartsWith("TM_"))
             {
                 CompAbilityUserMagic comp = com.pawnAbility.Pawn.GetComp<CompAbilityUserMagic>();
                 CompAbilityUserMight mightComp = com.pawnAbility.Pawn.GetComp<CompAbilityUserMight>();
@@ -2561,21 +2639,33 @@ namespace TorannMagic
                 {
                     flag2 = true;
                 }
-                string labelCap = com.LabelCap;
-                if (!labelCap.NullOrEmpty() && !shrink)
+                if (!shrink)
                 {
-                    Text.Font = GameFont.Tiny;
-                    float num = Text.CalcHeight(labelCap, rect.width);
-                    num -= 2f;
-                    Rect rect3 = new Rect(rect.x, rect.yMax - num + 12f, rect.width, num);
-                    GUI.DrawTexture(rect3, TexUI.GrayTextBG);
-                    GUI.color = Color.white;
-                    Text.Anchor = TextAnchor.UpperCenter;
-                    Widgets.Label(rect3, labelCap);
-                    Text.Anchor = TextAnchor.UpperLeft;
+                    string topRightLabel = com.TopRightLabel;
+                    if (!topRightLabel.NullOrEmpty())
+                    {
+                        Vector2 vector2 = Text.CalcSize(topRightLabel);
+                        Rect position;
+                        Rect rect3 = position = new Rect(rect.xMax - vector2.x - 2f, rect.y + 3f, vector2.x, vector2.y);
+                        position.x -= 2f;
+                        position.width += 3f;
+                        Text.Anchor = TextAnchor.UpperRight;
+                        GUI.DrawTexture(position, TexUI.GrayTextBG);
+                        Widgets.Label(rect3, topRightLabel);
+                        Text.Anchor = TextAnchor.UpperLeft;
+                    }
+                    string labelCap = com.LabelCap;
+                    if (!labelCap.NullOrEmpty())
+                    {
+                        float num = Text.CalcHeight(labelCap, rect.width);
+                        Rect rect2 = new Rect(rect.x, rect.yMax - num + 12f, rect.width, num);
+                        GUI.DrawTexture(rect2, TexUI.GrayTextBG);
+                        Text.Anchor = TextAnchor.UpperCenter;
+                        Widgets.Label(rect2, labelCap);
+                        Text.Anchor = TextAnchor.UpperLeft;
+                    }
                     GUI.color = Color.white;
                 }
-                GUI.color = Color.white;
                 if (Mouse.IsOver(rect))
                 {
                     TipSignal tipSignal = com.Desc;
@@ -2613,8 +2703,7 @@ namespace TorannMagic
                         if (Input.GetMouseButtonDown(1) && Mouse.IsOver(rect))
                         {
                             magicPower.AutoCast = !magicPower.AutoCast;
-                            return new GizmoResult(GizmoState.Mouseover, null);
-                            
+                            return new GizmoResult(GizmoState.Mouseover, null);                            
                         }
                     }
                     if (com.pawnAbility.Def == TorannMagicDefOf.TM_Firebolt)
@@ -2624,8 +2713,7 @@ namespace TorannMagic
                         if (Input.GetMouseButtonDown(1) && Mouse.IsOver(rect))
                         {
                             magicPower.AutoCast = !magicPower.AutoCast;
-                            return new GizmoResult(GizmoState.Mouseover, null);
-                            
+                            return new GizmoResult(GizmoState.Mouseover, null);                            
                         }
                     }
                     if (com.pawnAbility.Def == TorannMagicDefOf.TM_Icebolt)
@@ -2699,7 +2787,7 @@ namespace TorannMagic
                     if (com.pawnAbility.Def == TorannMagicDefOf.TM_Soothe || com.pawnAbility.Def == TorannMagicDefOf.TM_Soothe_I || com.pawnAbility.Def == TorannMagicDefOf.TM_Soothe_II || com.pawnAbility.Def == TorannMagicDefOf.TM_Soothe_III)
                     {
                         magicPower = comp.MagicData.MagicPowersHoF.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == tmAbilityDef);
-                    }
+                    }                    
                     if (com.pawnAbility.Def == TorannMagicDefOf.TM_Prediction)
                     {
                         magicPower = comp.MagicData.MagicPowersC.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Prediction);
@@ -2931,9 +3019,13 @@ namespace TorannMagic
                             
                         }
                     }
-                    if (comp.MagicData.MagicPowersCustom != null)
+                    if (com.pawnAbility.Def == TorannMagicDefOf.TM_SuppressiveAura)
                     {
-                        foreach (MagicPower mp in comp.MagicData.MagicPowersCustom)
+                        magicPower = comp.MagicData.MagicPowersCustom.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == tmAbilityDef);
+                    }
+                    if (comp.MagicData.MagicPowersCustomAll != null)
+                    {
+                        foreach (MagicPower mp in comp.MagicData.MagicPowersCustomAll)
                         {
                             if (mp.autocasting != null && mp.autocasting.type != TMDefs.AutocastType.Null && (mp.autocasting.drafted || mp.autocasting.undrafted))
                             {
@@ -2954,9 +3046,9 @@ namespace TorannMagic
                 if (mightComp != null && mightComp.MightData != null && com.pawnAbility.Def != null)
                 {
                     //might abilities
-                    if (mightComp.MightData.MightPowersCustom != null)
+                    if (mightComp.MightData.MightPowersCustomAll != null)
                     {
-                        foreach (MightPower mp in mightComp.MightData.MightPowersCustom)
+                        foreach (MightPower mp in mightComp.MightData.MightPowersCustomAll)
                         {
                             if (mp.autocasting != null && mp.autocasting.type != TMDefs.AutocastType.Null && (mp.autocasting.drafted || mp.autocasting.undrafted))
                             {
@@ -2994,7 +3086,7 @@ namespace TorannMagic
                             return new GizmoResult(GizmoState.Mouseover, null);
                             
                         }
-                    }
+                    }                    
                     if (com.pawnAbility.Def == TorannMagicDefOf.TM_PhaseStrike || com.pawnAbility.Def == TorannMagicDefOf.TM_PhaseStrike_I || com.pawnAbility.Def == TorannMagicDefOf.TM_PhaseStrike_II || com.pawnAbility.Def == TorannMagicDefOf.TM_PhaseStrike_III)
                     {
                         mightPower = mightComp.MightData.MightPowersB.FirstOrDefault<MightPower>((MightPower x) => x.abilityDef == tmAbilityDef);

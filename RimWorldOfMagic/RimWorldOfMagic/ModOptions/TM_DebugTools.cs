@@ -17,6 +17,18 @@ namespace TorannMagic.ModOptions
 {
     public static class TM_DebugTools
     {
+        [DebugAction("RWoM", "Spawn Scrolls", actionType =DebugActionType.ToolMap, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+        public static void SpawnScrolls()
+        {
+            IEnumerable<ThingDef> enumerable = from def in DefDatabase<ThingDef>.AllDefs
+                                               where (def.defName.StartsWith("SpellOf_") || def.defName.StartsWith("SkillOf_"))
+                                               select def;
+            foreach(ThingDef d in enumerable)
+            {
+                DebugThingPlaceHelper.DebugSpawn(d, UI.MouseCell(), 1, false, null);
+            }
+        }
+
         [DebugAction("RWoM", "Remove Class", actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap)]
         public static void RemoveClass(Pawn pawn)
         {
@@ -99,7 +111,11 @@ namespace TorannMagic.ModOptions
                         hd.def == TorannMagicDefOf.TM_LichHD || hd.def == TorannMagicDefOf.TM_ShapeshiftHD || hd.def == TorannMagicDefOf.TM_NightshadeHD ||  hd.def == TorannMagicDefOf.TM_HediffSprint || hd.def == TorannMagicDefOf.TM_SunderArmorHD ||
                         hd.def == TorannMagicDefOf.TM_ShadowSlayerCloakHD || hd.def == TorannMagicDefOf.TM_ManaShieldHD || hd.def == TorannMagicDefOf.TM_BlurHD ||  hd.def == TorannMagicDefOf.TM_InvisibilityHD ||
                         hd.def == TorannMagicDefOf.TM_HediffFightersFocus || hd.def == TorannMagicDefOf.TM_HediffThickSkin || hd.def == TorannMagicDefOf.TM_HediffStrongBack || hd.def == TorannMagicDefOf.TM_HediffGearRepair ||
-                        hd.def == TorannMagicDefOf.TM_HediffHeavyBlow || hd.def == TorannMagicDefOf.TM_BurningFuryHD)
+                        hd.def == TorannMagicDefOf.TM_HediffHeavyBlow || hd.def == TorannMagicDefOf.TM_BurningFuryHD || hd.def == TorannMagicDefOf.TM_CursedHD)
+                    {
+                        rhd.Add(hd);
+                    }
+                    if(TM_ClassUtility.CustomClassHediffs().Contains(hd.def))
                     {
                         rhd.Add(hd);
                     }
@@ -121,8 +137,12 @@ namespace TorannMagic.ModOptions
                     {
                         pawn.story.traits.allTraits.Remove(pawn.story.traits.allTraits[j]);
                         break;
-                    }
+                    }                    
                 }
+            }
+            if(pawn.story.traits.HasTrait(TorannMagicDefOf.TM_CursedTD))
+            {
+                pawn.story.traits.RemoveTrait(pawn.story.traits.GetTrait(TorannMagicDefOf.TM_CursedTD));
             }
         }
 

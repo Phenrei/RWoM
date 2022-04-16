@@ -435,10 +435,6 @@ namespace TorannMagic
 
         public void DoGlow()
         {
-            if(this.glower == null)
-            {
-                Log.Message("glower null");
-            }
             if (this.glower != null && glower.parent != null && this.Map != null)
             {
                 //Log.Message("glower not null, glow center " + glowCenter);
@@ -502,9 +498,12 @@ namespace TorannMagic
                 CompAbilityUserMagic comp = pawn.TryGetComp<CompAbilityUserMagic>();
                 if(comp != null && comp.IsMagicUser)
                 {
-                    pwrVal = TM_Calc.GetMagicSkillLevel(pawn, comp.MagicData.MagicPowerSkill_SpiritOfLight, "TM_SpiritOfLight", "_pwr");
-                    effVal = TM_Calc.GetMagicSkillLevel(pawn, comp.MagicData.MagicPowerSkill_SpiritOfLight, "TM_SpiritOfLight", "_eff");
-                    verVal = TM_Calc.GetMagicSkillLevel(pawn, comp.MagicData.MagicPowerSkill_SpiritOfLight, "TM_SpiritOfLight", "_ver");
+                    //pwrVal = TM_Calc.GetMagicSkillLevel(pawn, comp.MagicData.MagicPowerSkill_SpiritOfLight, "TM_SpiritOfLight", "_pwr");
+                    //effVal = TM_Calc.GetMagicSkillLevel(pawn, comp.MagicData.MagicPowerSkill_SpiritOfLight, "TM_SpiritOfLight", "_eff");
+                    //verVal = TM_Calc.GetMagicSkillLevel(pawn, comp.MagicData.MagicPowerSkill_SpiritOfLight, "TM_SpiritOfLight", "_ver");
+                    pwrVal = TM_Calc.GetSkillPowerLevel(pawn, TorannMagicDefOf.TM_SpiritOfLight, false);
+                    verVal = TM_Calc.GetSkillVersatilityLevel(pawn, TorannMagicDefOf.TM_SpiritOfLight, false);
+                    effVal = TM_Calc.GetSkillEfficiencyLevel(pawn, TorannMagicDefOf.TM_SpiritOfLight, false);
                     this.arcaneDmg = comp.arcaneDmg;
                 }
             }

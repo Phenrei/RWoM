@@ -56,6 +56,11 @@ namespace TorannMagic.ModOptions
         public float autocastMinThreshold = 0.7f;
         public float autocastCombatMinThreshold = 0.2f;
         public int autocastEvaluationFrequency = 180;
+        public bool autocastQueueing = false;
+
+        //Golem options
+        public bool showDormantFrames = false;
+        public bool showGolemsOnColonistBar = false;
 
         //class options
         public bool Arcanist = true;
@@ -78,6 +83,8 @@ namespace TorannMagic.ModOptions
         public bool ChaosMage = true;
         public bool Brightmage = true;
         public bool Shaman = true;
+        public bool Golemancer = true;
+        public bool Empath = true;
 
         public bool Gladiator = true;
         public bool Bladedancer = true;
@@ -91,10 +98,15 @@ namespace TorannMagic.ModOptions
         public bool Commander = true;
         public bool SuperSoldier = true;
         public bool Shadow = true;
+        public bool Apothecary = true;
 
         public bool ArcaneConduit = true;
         public bool ManaWell = true;
         public bool Boundless = true;
+        public bool Enlightened = true;
+        public bool Cursed = true;
+        public bool FaeBlood = true;
+        public bool GiantsBlood = true;
 
         //Faction settings
         public Dictionary<string, float> FactionFighterSettings = new Dictionary<string, float>();
@@ -156,6 +168,10 @@ namespace TorannMagic.ModOptions
             Scribe_Values.Look<float>(ref this.autocastCombatMinThreshold, "autocastCombatMinThreshold", 0.2f, false);
             Scribe_Values.Look<int>(ref this.autocastEvaluationFrequency, "autocastEvaluationFrequency", 180, false);
             Scribe_Values.Look<bool>(ref this.autocastAnimals, "autocastAnimals", false, false);
+            Scribe_Values.Look<bool>(ref this.autocastQueueing, "autocastQueueing", false, false);
+
+            Scribe_Values.Look<bool>(ref this.showDormantFrames, "showDormantFrames", false, false);
+            Scribe_Values.Look<bool>(ref this.showGolemsOnColonistBar, "showGolemsOnColonistBar", false, false);
 
             Scribe_Values.Look<bool>(ref this.Arcanist, "Arcanist", true, false);
             Scribe_Values.Look<bool>(ref this.FireMage, "FireMage", true, false);
@@ -189,10 +205,17 @@ namespace TorannMagic.ModOptions
             Scribe_Values.Look<bool>(ref this.Shadow, "Shadow", true, false);
             Scribe_Values.Look<bool>(ref this.Brightmage, "Brightmage", true, false);
             Scribe_Values.Look<bool>(ref this.Shaman, "Shaman", true, false);
+            Scribe_Values.Look<bool>(ref this.Golemancer, "Golemancer", true, false);
+            Scribe_Values.Look<bool>(ref this.Empath, "Empath", true, false);
+            Scribe_Values.Look<bool>(ref this.Apothecary, "Apothecary", true, false);
             Scribe_Collections.Look(ref this.CustomClass, "CustomClass");
             Scribe_Values.Look<bool>(ref this.ManaWell, "ManaWell", true, false);
             Scribe_Values.Look<bool>(ref this.ArcaneConduit, "ArcaneConduit", true, false);
             Scribe_Values.Look<bool>(ref this.Boundless, "Boundless", true, false);
+            Scribe_Values.Look<bool>(ref this.Enlightened, "Enlightened", true, false);
+            Scribe_Values.Look<bool>(ref this.Cursed, "Cursed", true, false);
+            Scribe_Values.Look<bool>(ref this.FaeBlood, "FaeBlood", true, false);
+            Scribe_Values.Look<bool>(ref this.GiantsBlood, "GiantsBlood", true, false);
             Scribe_Collections.Look(ref this.FactionFighterSettings, "FactionFighterSettings");
             Scribe_Collections.Look(ref this.FactionMageSettings, "FactionMageSettings");
         }

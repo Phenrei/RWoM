@@ -1,7 +1,255 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-<!-- Explosion -->
+<!-- Fire Mage Heatshield -->
+  
+  <EffecterDef>
+    <defName>TM_HeatShieldED</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_HeatShield</moteDef>
+		<rotation>
+			<min>0</min>
+			<max>0</max>
+		</rotation>
+		<rotationRate>
+			<min>0</min>
+			<max>0</max>
+		</rotationRate>
+        <scale>
+          <min>4</min>
+          <max>4</max>
+        </scale>
+      </li>
+	  <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_HeatShield</moteDef>
+        <scale>
+          <min>1</min>
+          <max>1</max>
+        </scale>
+      </li>
+    </children>
+  </EffecterDef>
+  
+  <ThingDef ParentName="MoteBase">
+    <defName>TM_Mote_HeatShield</defName>
+    <graphicData>
+      <texPath>Motes/FireShieldMote</texPath>
+      <shaderType>MoteGlow</shaderType>
+	  <color>(0.65,0.1,0.05)</color>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <drawOffscreen>true</drawOffscreen>
+    <mote>
+      <fadeInTime>0.01</fadeInTime>
+      <solidTime>0</solidTime>
+      <fadeOutTime>0.4</fadeOutTime>
+      <growthRate>-8</growthRate>
+	  <rotateTowardsTarget>false</rotateTowardsTarget>
+    </mote>
+  </ThingDef>
+
+<!-- Fade -->
+
+  <EffecterDef>
+    <defName>TM_FadeEffecter2ED</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_ShadowSwirlOut</moteDef>
+        <scale>
+          <min>.5</min>
+          <max>1</max>
+        </scale>
+      </li>
+    </children>
+  </EffecterDef>
+
+  <ThingDef ParentName="MoteBase">
+    <defName>TM_Mote_ShadowSwirlOut</defName>
+    <graphicData>
+      <texPath>Motes/PowerBeamWhirl</texPath>
+      <shaderType>MoteGlow</shaderType>
+	  <drawSize>(1, 1)</drawSize>
+	  <color>(0.2,0,.37,1)</color>
+    </graphicData>
+    <altitudeLayer>MoteLow</altitudeLayer>
+    <drawOffscreen>true</drawOffscreen>
+    <mote>
+      <fadeInTime>0.05</fadeInTime>
+      <solidTime>.2</solidTime>
+      <fadeOutTime>0.9</fadeOutTime>
+      <growthRate>20</growthRate>
+    </mote>
+  </ThingDef>
+
+  <EffecterDef>
+    <defName>TM_FadeEffecterED</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_ShadowCircleOut</moteDef>
+        <scale>
+          <min>1</min>
+          <max>2</max>
+        </scale>
+      </li>
+    </children>
+  </EffecterDef>
+
+  <ThingDef ParentName="MoteBase">
+    <defName>TM_Mote_ShadowCircleOut</defName>
+    <graphicData>
+      <texPath>Motes/ShadowCircleMote</texPath>
+      <shaderType>MoteGlow</shaderType>
+	  <drawSize>(1, 1)</drawSize>
+	  <color>(0.16,0,.37,1)</color>
+    </graphicData>
+    <altitudeLayer>MoteLow</altitudeLayer>
+    <drawOffscreen>true</drawOffscreen>
+    <mote>
+      <fadeInTime>0.05</fadeInTime>
+      <solidTime>.1</solidTime>
+      <fadeOutTime>0.9</fadeOutTime>
+      <growthRate>12</growthRate>
+    </mote>
+  </ThingDef>
+
+<!-- Mind Killer -->
+
+  <EffecterDef>
+    <defName>TM_MKWaveED</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_MKWaveInner</moteDef>
+        <scale>
+          <min>1</min>
+          <max>1</max>
+        </scale>
+      </li>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_MKWaveMiddle</moteDef>
+		<rotation>
+			<min>50</min>
+			<max>100</max>
+		</rotation>
+		<rotationRate>
+			<min>50</min>
+			<max>100</max>
+		</rotationRate>
+        <scale>
+          <min>10</min>
+          <max>10</max>
+        </scale>
+      </li>
+    </children>
+  </EffecterDef>
+
+  <ThingDef ParentName="MoteBase">
+    <defName>TM_Mote_MKWaveInner</defName>
+    <graphicData>
+      <texPath>Motes/PowerBeam</texPath>
+      <shaderType>MoteGlow</shaderType>
+	  <drawSize>(.4, .4)</drawSize>
+	  <color>(0.2,0,.4,1)</color>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <drawOffscreen>true</drawOffscreen>
+    <mote>
+      <fadeInTime>0.1</fadeInTime>
+      <solidTime>.1</solidTime>
+      <fadeOutTime>0.5</fadeOutTime>
+      <growthRate>350</growthRate>
+    </mote>
+  </ThingDef>
+
+  <ThingDef ParentName="MoteBase">
+    <defName>TM_Mote_MKWaveMiddle</defName>
+    <graphicData>
+      <texPath>Motes/PowerBeamFragments</texPath>
+      <shaderType>MoteGlow</shaderType>
+	  <color>(.4,0,.8,1)</color>
+	  <drawSize>(10, 10)</drawSize>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <drawOffscreen>true</drawOffscreen>
+    <mote>
+      <fadeInTime>0.4</fadeInTime>
+      <solidTime>1</solidTime>
+      <fadeOutTime>2</fadeOutTime>
+      <growthRate>-25</growthRate>
+    </mote>
+  </ThingDef>
+
+  <!-- Geolemancer rune carving -->
+  
+  <EffecterDef>
+    <defName>TM_RuneCarving_EffecterED</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_GlowingRune</moteDef>
+		<rotation>
+			<min>0</min>
+			<max>0</max>
+		</rotation>
+		<rotationRate>
+			<min>0</min>
+			<max>0</max>
+		</rotationRate>
+        <scale>
+          <min>4</min>
+          <max>4</max>
+        </scale>
+      </li>
+	  <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_GlowingRune</moteDef>
+        <scale>
+          <min>1</min>
+          <max>1</max>
+        </scale>
+      </li>
+    </children>
+  </EffecterDef>
+  
+  <ThingDef ParentName="MoteBase">
+    <defName>TM_Mote_GlowingRune</defName>
+    <graphicData>
+      <texPath>Motes/glowingrune</texPath>
+      <shaderType>MoteGlow</shaderType>
+	  <color>(0.6,0.8,1)</color>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <drawOffscreen>true</drawOffscreen>
+    <mote>
+      <fadeInTime>0.01</fadeInTime>
+      <solidTime>0</solidTime>
+      <fadeOutTime>0.4</fadeOutTime>
+      <growthRate>-8</growthRate>
+	  <rotateTowardsTarget>false</rotateTowardsTarget>
+    </mote>
+  </ThingDef>
+
+  <EffecterDef>
+    <defName>TM_RuneCarving</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerContinuous</subEffecterClass>
+        <scale>0.1~0.4</scale>
+        <ticksBetweenMotes>30</ticksBetweenMotes>
+        <positionLerpFactor>0.2</positionLerpFactor>
+        <positionRadius>0.6</positionRadius>
+        <moteDef>Mote_GlowingRune</moteDef>
+      </li>
+    </children>
+  </EffecterDef>
+  
+  <!-- Explosion -->
 
   <EffecterDef>
     <defName>TM_ExplosionED</defName>
@@ -906,6 +1154,20 @@
       </li>
     </children>
   </EffecterDef>
+  
+  <EffecterDef>
+    <defName>TM_AttractionEffecterSmall</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_ShadowCircleIn</moteDef>
+        <scale>
+          <min>2</min>
+          <max>3</max>
+        </scale>
+      </li>
+    </children>
+  </EffecterDef>
 
   <ThingDef ParentName="MoteBase">
     <defName>TM_Mote_ShadowCircleIn</defName>
@@ -1518,6 +1780,259 @@
       <solidTime>0</solidTime>
       <fadeOutTime>0.4</fadeOutTime>
       <growthRate>-8</growthRate>
+	  <rotateTowardsTarget>false</rotateTowardsTarget>
+    </mote>
+  </ThingDef>
+  
+  <!-- Golem Effects -->
+  
+  <EffecterDef>
+    <defName>TM_BullCharge_Effecter</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_BullHead</moteDef>
+		<rotation>
+			<min>0</min>
+			<max>0</max>
+		</rotation>
+		<rotationRate>
+			<min>0</min>
+			<max>0</max>
+		</rotationRate>
+        <scale>
+          <min>1</min>
+          <max>1</max>
+        </scale>
+      </li>
+	  <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_BullHead</moteDef>
+        <scale>
+          <min>1</min>
+          <max>1</max>
+        </scale>
+      </li>
+    </children>
+  </EffecterDef>
+  
+  <ThingDef ParentName="MoteBase">
+    <defName>TM_Mote_BullHead</defName>
+    <graphicData>
+      <texPath>Motes/bull_head</texPath>
+      <shaderType>MoteGlow</shaderType>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <drawOffscreen>true</drawOffscreen>
+    <mote>
+      <fadeInTime>0.01</fadeInTime>
+      <solidTime>0</solidTime>
+      <fadeOutTime>0.4</fadeOutTime>
+      <growthRate>2</growthRate>
+	  <rotateTowardsTarget>false</rotateTowardsTarget>
+    </mote>
+  </ThingDef>
+  
+  <EffecterDef>
+    <defName>TM_LightningShield_Effecter</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_LightningShield</moteDef>
+		<rotation>
+			<min>0</min>
+			<max>0</max>
+		</rotation>
+		<rotationRate>
+			<min>0</min>
+			<max>0</max>
+		</rotationRate>
+        <scale>
+          <min>1</min>
+          <max>1</max>
+        </scale>
+      </li>
+	  <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_LightningShield</moteDef>
+        <scale>
+          <min>1</min>
+          <max>1</max>
+        </scale>
+      </li>
+    </children>
+  </EffecterDef>
+  
+  <ThingDef ParentName="MoteBase">
+    <defName>TM_Mote_LightningShield</defName>
+    <graphicData>
+      <texPath>Motes/GolemShield_Lightning</texPath>
+      <shaderType>MoteGlow</shaderType>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <drawOffscreen>true</drawOffscreen>
+    <mote>
+      <fadeInTime>0.01</fadeInTime>
+      <solidTime>0</solidTime>
+      <fadeOutTime>0.4</fadeOutTime>
+      <growthRate>2</growthRate>
+	  <rotateTowardsTarget>false</rotateTowardsTarget>
+    </mote>
+  </ThingDef>
+  
+  <EffecterDef>
+    <defName>TM_WaterShield_Effecter</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_WaterShield</moteDef>
+		<rotation>
+			<min>0</min>
+			<max>0</max>
+		</rotation>
+		<rotationRate>
+			<min>0</min>
+			<max>0</max>
+		</rotationRate>
+        <scale>
+          <min>3</min>
+          <max>3</max>
+        </scale>
+      </li>
+	  <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_WaterShield</moteDef>
+		<rotation>
+			<min>0</min>
+			<max>0</max>
+		</rotation>
+		<rotationRate>
+			<min>0</min>
+			<max>0</max>
+		</rotationRate>
+        <scale>
+          <min>1</min>
+          <max>1</max>
+        </scale>
+      </li>
+    </children>
+  </EffecterDef>
+  
+  <ThingDef ParentName="MoteBase">
+    <defName>TM_Mote_WaterShield</defName>
+    <graphicData>
+      <texPath>Motes/GolemShield_Water</texPath>
+      <shaderType>MoteGlow</shaderType>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <drawOffscreen>true</drawOffscreen>
+    <mote>
+      <fadeInTime>0.01</fadeInTime>
+      <solidTime>0</solidTime>
+      <fadeOutTime>0.4</fadeOutTime>
+      <growthRate>-2</growthRate>
+	  <rotateTowardsTarget>false</rotateTowardsTarget>
+    </mote>
+  </ThingDef>
+  
+  <EffecterDef>
+    <defName>TM_FireShield_Effecter</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_FireShield</moteDef>
+		<rotation>
+			<min>0</min>
+			<max>0</max>
+		</rotation>
+		<rotationRate>
+			<min>0</min>
+			<max>0</max>
+		</rotationRate>
+        <scale>
+          <min>1</min>
+          <max>1</max>
+        </scale>
+      </li>
+	  <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_FireShield</moteDef>
+        <scale>
+          <min>1</min>
+          <max>1</max>
+        </scale>
+      </li>
+    </children>
+  </EffecterDef>
+  
+  <ThingDef ParentName="MoteBase">
+    <defName>TM_Mote_FireShield</defName>
+    <graphicData>
+      <texPath>Motes/GolemShield_Fire</texPath>
+      <shaderType>MoteGlow</shaderType>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <drawOffscreen>true</drawOffscreen>
+    <mote>
+      <fadeInTime>0.01</fadeInTime>
+      <solidTime>0</solidTime>
+      <fadeOutTime>0.4</fadeOutTime>
+      <growthRate>2</growthRate>
+	  <rotateTowardsTarget>false</rotateTowardsTarget>
+    </mote>
+  </ThingDef>
+  
+  <EffecterDef>
+    <defName>TM_EarthShield_Effecter</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_EarthShield</moteDef>
+		<rotation>
+			<min>0</min>
+			<max>0</max>
+		</rotation>
+		<rotationRate>
+			<min>0</min>
+			<max>0</max>
+		</rotationRate>
+        <scale>
+          <min>1</min>
+          <max>1</max>
+        </scale>
+      </li>
+	  <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <moteDef>TM_Mote_EarthShield</moteDef>
+		<rotation>
+			<min>0</min>
+			<max>0</max>
+		</rotation>
+		<rotationRate>
+			<min>0</min>
+			<max>0</max>
+		</rotationRate>
+        <scale>
+          <min>3</min>
+          <max>3</max>
+        </scale>
+      </li>
+    </children>
+  </EffecterDef>
+  
+  <ThingDef ParentName="MoteBase">
+    <defName>TM_Mote_EarthShield</defName>
+    <graphicData>
+      <texPath>Motes/GolemShield_Earth</texPath>
+      <shaderType>MoteGlow</shaderType>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <drawOffscreen>true</drawOffscreen>
+    <mote>
+      <fadeInTime>0.01</fadeInTime>
+      <solidTime>0</solidTime>
+      <fadeOutTime>0.4</fadeOutTime>
+      <growthRate>-2</growthRate>
 	  <rotateTowardsTarget>false</rotateTowardsTarget>
     </mote>
   </ThingDef>

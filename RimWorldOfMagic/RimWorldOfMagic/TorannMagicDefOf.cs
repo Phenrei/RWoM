@@ -53,6 +53,8 @@ namespace TorannMagic
         public static ThingDef Torn_BookOfTheSun;
         public static ThingDef Torn_BookOfShamanism;
         public static ThingDef BookOfShamanism;
+        public static ThingDef Torn_BookOfGolemancy;
+        public static ThingDef BookOfGolemancy;
 
         public static ThingDef BookOfQuestion;
 
@@ -115,6 +117,9 @@ namespace TorannMagic
         public static ThingDef SpellOf_GuardianSpirit;
         public static ThingDef SpellOf_ShieldOther;
         public static ThingDef SpellOf_Discord;
+        public static ThingDef SpellOf_BrandSiphon;
+        public static ThingDef SpellOf_LivingWall;
+        public static ThingDef SpellOf_HeatShield;
 
         public static ThingDef SkillOf_Sprint;
         public static ThingDef SkillOf_GearRepair;
@@ -196,6 +201,10 @@ namespace TorannMagic
         public static TraitDef TM_OKWithDeath;
         public static TraitDef TM_ManaWellTD;
         public static TraitDef TM_ArcaneConduitTD;
+        public static TraitDef TM_FaeBloodTD;
+        public static TraitDef TM_EnlightenedTD;
+        public static TraitDef TM_CursedTD;
+        public static HediffDef TM_CursedHD;
 
         //Wanderer
         public static TraitDef TM_Wanderer;
@@ -254,6 +263,7 @@ namespace TorannMagic
         public static ThingDef TM_Blizzard_Small;
         public static ThingDef TM_Blizzard_Tiny;
         public static ThingDef TM_Blizzard_Large;
+        public static ThingDef TM_Hail;
 
         //Lightning
         public static TraitDef StormBorn;
@@ -702,7 +712,59 @@ namespace TorannMagic
         public static ThingDef TM_SpiritWolfR;
 
         //Golemancer
-        //public static TraitDef TM_Golemancer;
+        public static TraitDef TM_Golemancer;
+
+        public static TMAbilityDef TM_Golemancy;
+        public static HediffDef TM_GolemancyVersatilityHD;
+        public static HediffDef TM_GolemancyPowerHD;
+        public static HediffDef TM_GolemancyEfficiencyHD;
+        public static TMAbilityDef TM_RuneCarving;
+        public static HediffDef TM_RuneCarvedPartHD;
+        public static HediffDef TM_ArcaneTatooPartHD;
+        public static StatDef TM_RuneCarvingEfficiency;
+        public static EffecterDef TM_RuneCarving_EffecterED;
+        public static RecipeDef TM_RuneCarveBodyPart;
+        public static TMAbilityDef TM_Branding;
+        public static TMAbilityDef TM_SiphonBrand;
+        public static TMAbilityDef TM_DispelBranding;
+        public static HediffDef TM_SiphonBrandHD;
+        public static TMAbilityDef TM_FitnessBrand;
+        public static HediffDef TM_FitnessBrandHD;
+        public static TMAbilityDef TM_EmotionBrand;
+        public static HediffDef TM_EmotionBrandHD;
+        public static TMAbilityDef TM_VitalityBrand;
+        public static HediffDef TM_VitalityBrandHD;
+        public static TMAbilityDef TM_ProtectionBrand;
+        public static HediffDef TM_ProtectionBrandHD;
+        public static TMAbilityDef TM_AwarenessBrand;
+        public static HediffDef TM_AwarenessBrandHD;
+        public static TMAbilityDef TM_SigilSurge;
+        public static TMAbilityDef TM_SigilDrain;
+        public static HediffDef TM_SigilPainHD;
+        public static TMAbilityDef TM_LivingWall;
+        public static ThingDef FlyingObject_LivingWall;
+        public static TMAbilityDef TM_DispelLivingWall;
+
+        //Empath
+        public static TraitDef TM_Empath;
+
+        public static TMAbilityDef TM_Empathy;
+        public static HediffDef TM_EmpathHD;
+        public static TMAbilityDef TM_MindKiller;
+        public static HediffDef TM_MindKillerHD;
+        public static TMAbilityDef TM_HarvestPassion;
+        public static HediffDef TM_HarvestPassionHD;
+        public static TMAbilityDef TM_IncitePassion;
+        public static TMAbilityDef TM_SuppressiveAura;
+        public static HediffDef TM_SuppressiveAuraHD;
+        public static HediffDef TM_EmotionSuppressionHD;
+        public static ThoughtDef TM_PositiveEmpathyTD;
+        public static ThoughtDef TM_NegativeEmpathyTD;
+        public static ThoughtDef TM_EmotionalWeightTD;
+        public static TMAbilityDef TM_Symbiosis;
+        public static HediffDef TM_SymbiosisHD;
+        public static HediffDef TM_OutOfBodyHD;
+        public static TMAbilityDef TM_FadeEmotions;
 
         //Shadow
         public static TraitDef TM_TheShadow;
@@ -733,13 +795,30 @@ namespace TorannMagic
 
         public static TraitDef PhysicalProdigy;
         public static TraitDef TM_BoundlessTD;
+        public static TraitDef TM_GiantsBloodTD;
         public static ThoughtDef TM_OpinionOfBoundless;
 
         //Wayfarer
         public static TraitDef TM_Wayfarer;
 
         public static TMAbilityDef TM_WayfarerCraft;
-        public static TMAbilityDef TM_FieldTraining;        
+        public static TMAbilityDef TM_FieldTraining;
+
+        //Apothecary
+        public static TraitDef TM_Apothecary;
+
+        public static TMAbilityDef TM_Herbalist;
+        public static HediffDef TM_ApothecaryHerbsHD;
+        public static TMAbilityDef TM_PoisonFlask;
+        public static HediffDef TM_HerbalElixirHD;
+        public static TMAbilityDef TM_Elixir;
+        public static TMAbilityDef TM_SoothingBalm;
+        public static HediffDef TM_SoothingBalmHD;
+        public static TMAbilityDef TM_FireSuppressionFlask;
+        public static TMAbilityDef TM_HerbalClarity;
+        public static HediffDef TM_HerbalClarityHD;
+        public static TMAbilityDef TM_HerbalBliss;
+        public static HediffDef TM_HerbalBlissHD;
 
         //Might (Gladiator)
         public static TraitDef Gladiator;
@@ -1000,12 +1079,15 @@ namespace TorannMagic
         public static TMAbilityDef TM_Taunt;
         public static HediffDef TM_TauntHD;
         public static TMAbilityDef TM_Discord;
+        public static HediffDef TM_FrailtyHD;
+        public static TMAbilityDef TM_HeatShield;
+        public static HediffDef TM_HeatShieldHD;
 
         public static HediffDef TM_Sight;
         public static HediffDef TM_Breathing;
         public static HediffDef TM_Manipulation;
         public static HediffDef TM_Movement;
-        public static HediffDef TM_HasteHD;
+        public static HediffDef TM_HasteHD;        
 
         public static HediffDef TM_AntiSight;
         public static HediffDef TM_AntiBreathing;
@@ -1129,9 +1211,11 @@ namespace TorannMagic
         public static ThingDef Mote_Holy;
         public static ThingDef Mote_LightBarrier;
         public static ThingDef Mote_DirectionalDirt;
+        public static ThingDef Mote_DirectionalDirtOverhead;
         public static ThingDef Mote_ExpandingFlame;
         public static ThingDef Mote_Hex;
         public static ThingDef Mote_BlackSmoke;
+        public static ThingDef Mote_BlackSmokeLow;
         public static ThingDef Mote_SpiritWolf_South;
         public static ThingDef Mote_SpiritWolf_North;
         public static ThingDef Mote_SpiritWolf_East;
@@ -1144,7 +1228,13 @@ namespace TorannMagic
         public static ThingDef Mote_BlueSpireW;
         public static ThingDef Mote_BlueSwirl;
         public static ThingDef Mote_ManaVortex;
-
+        public static ThingDef Mote_GlowingRuneA;
+        public static ThingDef Mote_WallSpike;
+        public static ThingDef Mote_EnergyStream;
+        public static ThingDef Mote_RedSwirl;
+        public static ThingDef Mote_PurpleSmoke;
+        public static ThingDef Mote_Psi_Black;
+        
         public static ThingDef Projectile_FogOfTorment;        
 
         public static EffecterDef GiantExplosion;
@@ -1177,6 +1267,11 @@ namespace TorannMagic
         public static EffecterDef TM_LightBurstED;
         public static EffecterDef TM_RageWaveED;
         public static EffecterDef TM_ExplosionED;
+        public static EffecterDef TM_MKWaveED;
+        public static EffecterDef TM_FadeEffecterED;
+        public static EffecterDef TM_FadeEffecter2ED;
+        public static EffecterDef TM_AttractionEffecterSmall;
+        public static EffecterDef TM_HeatShieldED;
 
         //psychast copies, used with tm_motemaker.makeoverlay
         //adjusts def values on each cast
@@ -1217,6 +1312,12 @@ namespace TorannMagic
         public static JobDef JobDriver_TM_GotoAndWait;
         public static JobDef JobDriver_GotoAndCast;
         public static JobDef JobDriver_Discord;
+        public static JobDef JobDriver_GolemDespawn;
+        public static JobDef JobDriver_MechaMine;
+        public static JobDef JobDriver_FleshHarvest;
+        public static JobDef JobDriver_FleshChop;
+        public static JobDef JobDriver_GolemSelfTend;
+        public static JobDef JobDriver_GolemAbilityJob;
 
         //Things
         public static ThingDef RawMagicyte;
@@ -1260,6 +1361,8 @@ namespace TorannMagic
         public static SoundDef TM_WolfHowl;
         public static SoundDef TM_FireBurn;
         public static SoundDef TM_Roar;
+        public static SoundDef TM_Powerup;
+        public static SoundDef TM_Scream;
 
         //Inspirations
         public static InspirationDef ID_Champion;
@@ -1312,9 +1415,12 @@ namespace TorannMagic
         //public static ThoughtDef AteMysteryMeatAsIngredient;
         public static ThoughtDef TM_SeverMagic_ForApproveTD;
         public static ThoughtDef TM_SeverMagic_ForVeneratedTD;
+        public static ThoughtDef ObservedLayingCorpse;
+        public static ThoughtDef ObservedLayingRottingCorpse;
 
         //WeatherDefs
         public static WeatherDef TM_HealingRainWD;
+        public static WeatherDef TM_HailstormWD;
 
         //Factions
         public static FactionDef TM_SkeletalFaction;
@@ -1371,5 +1477,41 @@ namespace TorannMagic
         //FleckDefs
         public static FleckDef ElectricalSpark;
         public static FleckDef SparkFlash;
+
+        //Golems
+        public static ThingDef TM_MechaGolem;
+        public static PawnKindDef TM_MechaGolemK;
+        public static ThingDef TM_MechaGolem_Workstation;
+        public static ThinkTreeDef TM_GolemMain;
+        public static HediffDef TM_GolemHD;
+        public static HediffDef TM_BullChargeHD;
+        public static HediffDef TM_FleshGolem_BracerGuardHD;
+        public static NeedDef TM_GolemEnergy;
+        public static NeedDef TM_GolemRage;
+        public static ThingDef TM_HollowGolem;
+        public static PawnKindDef TM_HollowGolemK;
+        public static LifeStageDef TM_HollowGolemLS;        
+        public static HediffDef TM_DecayHD;
+        public static JobDef JobDriver_GolemAttackStatic;
+        public static ThingDef Mote_Golem_LSFA_South;
+        public static ThingDef Mote_Golem_LSFA_East;
+        public static ThingDef Mote_Golem_LSFA_West;
+        public static HediffDef TM_DeathFieldHD;
+        public static ThingDef TM_HollowGolem_Workstation;
+        public static TMDefs.TM_GolemUpgradeDef TM_Golem_HollowOrbOfExtinguishedFlames;
+        public static ThingDef TM_StoneGolem;
+        public static ThingDef TM_SandstoneGolem;
+        public static ThingDef TM_LimestoneGolem;
+        public static ThingDef TM_SlateGolem;
+        public static ThingDef TM_MarbleGolem;
+        public static ThingDef TM_GraniteGolem;
+        public static PawnKindDef TM_StoneGolemK;
+        public static PawnKindDef TM_SandstoneGolemK;
+        public static PawnKindDef TM_LimestoneGolemK;
+        public static PawnKindDef TM_SlateGolemK;
+        public static PawnKindDef TM_MarbleGolemK;
+        public static PawnKindDef TM_GraniteGolemK;
+        public static PawnTableDef TM_Golems;
+        //public static TMDefs.TM_GolemAbility TM_Golem_GatlingCannon;
     }
 }

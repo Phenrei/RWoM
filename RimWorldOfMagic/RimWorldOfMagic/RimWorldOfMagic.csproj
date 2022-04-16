@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="AbilityUser">
       <HintPath>..\..\..\AllModdingComponents\AbilityUser.dll</HintPath>
       <Private>False</Private>
@@ -43,12 +47,23 @@
       <HintPath>..\..\..\AllModdingComponents\AlienRace.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AllowTool">
+      <HintPath>..\..\..\RimWorld-EnhancementPack\packages\AllowTool.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="CompDeflector">
       <HintPath>..\..\..\AllModdingComponents\CompDeflector.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="GiddyUpCore">
       <HintPath>..\..\..\AllModdingComponents\GiddyUpCore.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="HarmonyMod">
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\2009463077\Current\Assemblies\HarmonyMod.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="HugsLib">
@@ -59,14 +74,44 @@
       <HintPath>..\..\..\AllModdingComponents\SimpleSidearms.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System" />
+    <Reference Include="System">
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\System.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml.Linq">
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\System.Xml.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml">
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\System.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\..\..\..\..\Valheim\unstripped_corlib\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbilityDecisionConditionalNode_EnemyTargetIsBuilding.cs" />
@@ -96,6 +141,120 @@
     <Compile Include="Building_TMTotem_Healing.cs" />
     <Compile Include="Building_TMTotem_Lightning.cs" />
     <Compile Include="Building_TM_DMP.cs" />
+    <Compile Include="Skyfaller_Hail.cs" />
+    <Compile Include="WeatherEvent_HailWave.cs" />
+    <Compile Include="DeathWorker_Sentinel.cs" />
+    <Compile Include="Golems\PawnColumnWorker_GolemActive.cs" />
+    <Compile Include="Golems\PawnColumnWorker_GolemAge.cs" />
+    <Compile Include="Golems\PawnColumnWorker_GolemMaster.cs" />
+    <Compile Include="Golems\PawnColumnWorker_GolemRestPercent.cs" />
+    <Compile Include="Golems\PawnColumnWorker_GolemAwakenPercent.cs" />
+    <Compile Include="Golems\PawnColumnWorker_GolemNeeds.cs" />
+    <Compile Include="Golems\PawnColumnWorker_GolemThreatRange.cs" />
+    <Compile Include="Golems\MainTabWindow_Golems.cs" />
+    <Compile Include="Golems\GolemNameWindow.cs" />
+    <Compile Include="Golems\JobGiver_GolemExtinguishSelf.cs" />
+    <Compile Include="HediffComp_HerbalBliss.cs" />
+    <Compile Include="HediffComp_SymbiosisCaster.cs" />
+    <Compile Include="HediffComp_SymbiosisHost.cs" />
+    <Compile Include="HediffComp_Cursed.cs" />
+    <Compile Include="HediffComp_SeverityPercent.cs" />
+    <Compile Include="JobGiver_AIAbilityUser.cs" />
+    <Compile Include="FlyingObject_Advanced_Icebolt.cs" />
+    <Compile Include="FlyingObject_LivingWall.cs" />
+    <Compile Include="Golems\Building_TMGolemStone.cs" />
+    <Compile Include="Golems\Building_TMGolemBase.cs" />
+    <Compile Include="Golems\GolemAbilitiesWindow.cs" />
+    <Compile Include="Golems\GolemDrawClass.cs" />
+    <Compile Include="Golems\GolemVerbTracker.cs" />
+    <Compile Include="Golems\CompProperties_GolemAbilityEffect_AbsorbFire.cs" />
+    <Compile Include="Golems\CompProperties_GolemAbilityEffect_Awakening.cs" />
+    <Compile Include="Golems\CompProperties_GolemAbilityEffect_Fade.cs" />
+    <Compile Include="Golems\GolemWorkstationEffect_CreateItem.cs" />
+    <Compile Include="Golems\GolemWorkstationEffect_DestroyFilth.cs" />
+    <Compile Include="Golems\GolemWorkstationEffect_EnableMaharalPower.cs" />
+    <Compile Include="Golems\GolemWorkstationEffect_RegulateTemperature.cs" />
+    <Compile Include="Golems\GolemWorkstationEffect_DestroyFire.cs" />
+    <Compile Include="Golems\GolemWorkstationEffect_Glow.cs" />
+    <Compile Include="Golems\JobDriver_GolemAttackStatic.cs" />
+    <Compile Include="Golems\CompProperties_GolemAbilityEffect_CreateJob.cs" />
+    <Compile Include="Golems\CompProperties_GolemAbilityEffect_Dismember.cs" />
+    <Compile Include="Golems\CompProperties_GolemAbilityEffect_ApplyDamage.cs" />
+    <Compile Include="Golems\CompProperties_GolemAbilityEffect_ApplyHediff.cs" />
+    <Compile Include="Golems\GolemAbilityEffect_AdvancedLaunch.cs" />
+    <Compile Include="Golems\GolemAbilityEffect.cs" />
+    <Compile Include="Golems\GolemWorkstationEffect_ApplyHediff.cs" />
+    <Compile Include="Golems\JobDriver_FleshHarvest.cs" />
+    <Compile Include="Golems\JobDriver_FleshChop.cs" />
+    <Compile Include="Golems\JobDriver_GolemAbilityJob.cs" />
+    <Compile Include="Golems\JobDriver_GolemSelfTend.cs" />
+    <Compile Include="Golems\JobGiver_FleshGolemExtinguish.cs" />
+    <Compile Include="Golems\JobGiver_GolemForceGotoDespawn.cs" />
+    <Compile Include="Golems\JobGiver_DraftedGolemRangedAttack.cs" />
+    <Compile Include="Golems\JobGiver_GolemSelfTend.cs" />
+    <Compile Include="Golems\Need_GolemRage.cs" />
+    <Compile Include="Golems\ThinkNode_ConditionalGolem.cs" />
+    <Compile Include="Golems\ThinkNode_ConditionalShouldDespawn.cs" />
+    <Compile Include="Golems\TMHollowGolem.cs" />
+    <Compile Include="Golems\UnfinishedNoProductThing.cs" />
+    <Compile Include="Golems\CompProperties_GolemAbilityEffect_AbsorbFilth.cs" />
+    <Compile Include="Golems\CompProperties_GolemAbilityEffect_ShieldPawn.cs" />
+    <Compile Include="Golems\CompProperties_GolemAbilityEffect_LaunchThing.cs" />
+    <Compile Include="Golems\CompProperties_GolemAbilityEffect_HealPawn.cs" />
+    <Compile Include="Golems\CompProperties_GolemAbilityEffect.cs" />
+    <Compile Include="Golems\TM_GolemAbility.cs" />
+    <Compile Include="Golems\TM_GolemUpgrade.cs" />
+    <Compile Include="Golems\GolemAbilityUpgrade.cs" />
+    <Compile Include="Golems\GolemWorkstationEffect_RepairBuilding.cs" />
+    <Compile Include="Golems\GolemWorkstationEffect_RestorePart.cs" />
+    <Compile Include="Golems\JobDriver_MechaMine.cs" />
+    <Compile Include="Golems\JobGiver_MechaGolemExtinguish.cs" />
+    <Compile Include="Golems\JobGiver_GolemJobs.cs" />
+    <Compile Include="Golems\JobGiver_GolemGetEnergy.cs" />
+    <Compile Include="Golems\JobGiver_GolemWanderNearMaster.cs" />
+    <Compile Include="Golems\JobGiver_GolemFollowMaster.cs" />
+    <Compile Include="Golems\JobGiver_GolemDefendMaster.cs" />
+    <Compile Include="Golems\ThinkNode_GolemShouldFollowMaster.cs" />
+    <Compile Include="Golems\JobGiver_EngageThreatInRange.cs" />
+    <Compile Include="Golems\GolemWorkstationEffect_LaunchThing.cs" />
+    <Compile Include="Golems\GolemWorkstationEffect.cs" />
+    <Compile Include="Golems\GolemUtility.cs" />
+    <Compile Include="Golems\GolemAbilityWorker.cs" />
+    <Compile Include="Golems\CompGolemEnergyHandler.cs" />
+    <Compile Include="Golems\CompProperties_GolemEnergyHandler.cs" />
+    <Compile Include="Golems\CompProperties_Golem.cs" />
+    <Compile Include="Golems\CompGolem.cs" />
+    <Compile Include="Golems\ITab_GolemPawn.cs" />
+    <Compile Include="Golems\JobDriver_GolemDespawn.cs" />
+    <Compile Include="Golems\ITab_GolemWorkstation.cs" />
+    <Compile Include="Golems\Need_GolemEnergy.cs" />
+    <Compile Include="Golems\Verb_GolemSmash.cs" />
+    <Compile Include="Golems\Verb_GolemShoot.cs" />
+    <Compile Include="Golems\Verb_DarkBolt.cs" />
+    <Compile Include="Golems\Verb_FireBlossom.cs" />
+    <Compile Include="Golems\Verb_IceBlossom.cs" />
+    <Compile Include="Golems\Verb_NullCleave.cs" />
+    <Compile Include="Golems\Verb_DecayTouch.cs" />
+    <Compile Include="HediffComp_DoomField.cs" />
+    <Compile Include="HediffComp_DeathField.cs" />
+    <Compile Include="HediffComp_Decay.cs" />
+    <Compile Include="HediffComp_HarvestPassion.cs" />
+    <Compile Include="HediffComp_SupressiveAura.cs" />
+    <Compile Include="HediffComp_Empath.cs" />
+    <Compile Include="HeidffWithCompsExtra.cs" />
+    <Compile Include="Hediff_ApothecaryHerbs.cs" />
+    <Compile Include="HediffComp_BrandingProtection.cs" />
+    <Compile Include="HediffComp_BrandingEmotion.cs" />
+    <Compile Include="HediffComp_BrandingVitality.cs" />
+    <Compile Include="HediffComp_BrandingSiphon.cs" />
+    <Compile Include="HediffComp_BrandingBase.cs" />
+    <Compile Include="HediffComp_HerbalElixir.cs" />
+    <Compile Include="Ideology\TM_Precept_RoleVoidSeeker.cs" />
+    <Compile Include="ModOptions\GolemOptionsWindow.cs" />
+    <Compile Include="Projectile_FireSuppressionFlask.cs" />
+    <Compile Include="Projectile_ReverseShield.cs" />
+    <Compile Include="Projectile_PoisonFlask.cs" />
+    <Compile Include="Recipe_RuneCarving.cs" />
     <Compile Include="Command_LocalTargetInfo.cs" />
     <Compile Include="CompAbilityUserMagic.cs" />
     <Compile Include="CompAbilityUserMight.cs" />
@@ -142,7 +301,7 @@
     <Compile Include="DeathWorker_Demon.cs" />
     <Compile Include="DeathWorker_Elemental.cs" />
     <Compile Include="DeathWorker_Poppi.cs" />
-    <Compile Include="DeathWorker_Sentinel.cs" />
+    <Compile Include="DeathWorker_StoneGolem.cs" />
     <Compile Include="DeathWorker_Skeletal.cs" />
     <Compile Include="DeathWorker_Spirit.cs" />
     <Compile Include="DefModExtension_LearnAbilityRequiredTraits.cs" />
@@ -314,6 +473,7 @@
     <Compile Include="Ideology\TM_RitualOutcomeEffectWorker_SeverMagic.cs" />
     <Compile Include="Ideology\TM_JobDriver_SeverMagic.cs" />
     <Compile Include="Ideology\TM_JobGiver_SeverMagic.cs" />
+    <Compile Include="Ideology\TM_RitualRoleGiftedInspired.cs" />
     <Compile Include="Ideology\TM_RitualRoleGifted.cs" />
     <Compile Include="Ideology\TM_RitualRoleMage.cs" />
     <Compile Include="Ideology\TM_RitualSpectatorFilter_WillWitnessBestowMagic.cs" />
@@ -490,6 +650,7 @@
     <Compile Include="SihvRMagicScrollScribe\CompUseEffect_WriteSpell_Rain.cs" />
     <Compile Include="SihvRMagicScrollScribe\CompUseEffect_WriteTornScript.cs" />
     <Compile Include="SihvRMagicScrollScribe\SihvSpawnThings.cs" />
+    <Compile Include="SkullDatabase.cs" />
     <Compile Include="Spirit_DeathWorker.cs" />
     <Compile Include="StaminaPoolCategory.cs" />
     <Compile Include="StatPart_Undead.cs" />
@@ -519,6 +680,13 @@
     <Compile Include="TMAbilityDef.cs" />
     <Compile Include="TMDamageDefOf.cs" />
     <Compile Include="TMDefOf.cs" />
+    <Compile Include="TMDefs\HediffEnchantment.cs" />
+    <Compile Include="TMDefs\DefModExtension_HediffEnchantments.cs" />
+    <Compile Include="TMDefs\TM_GolemAbilityDef.cs" />
+    <Compile Include="TMDefs\TM_GolemItemRecipeDef.cs" />
+    <Compile Include="TMDefs\TM_GolemUpgradeDef.cs" />
+    <Compile Include="Golems\TM_Golem.cs" />
+    <Compile Include="TMDefs\TM_Structs.cs" />
     <Compile Include="TMDefs\DefModExtension_TraitEnchantments.cs" />
     <Compile Include="TMDefs\TM_Autocast.cs" />
     <Compile Include="TMDefs\TM_AutocastCondition.cs" />
@@ -532,14 +700,17 @@
     <Compile Include="TMDefs\TM_SpawnThings.cs" />
     <Compile Include="TMJobDriver_CastAbilitySelf.cs" />
     <Compile Include="TMJobDriver_CastAbilityVerb.cs" />
+    <Compile Include="Golems\TMPawnGolem.cs" />
     <Compile Include="TMPawnSummoned.cs" />
     <Compile Include="TM_Action.cs" />
     <Compile Include="TM_AutocastConditionDef.cs" />
     <Compile Include="TM_Calc.cs" />
     <Compile Include="TM_ChaosPower.cs" />
+    <Compile Include="Golems\TM_GolemUtility.cs" />
     <Compile Include="TM_ClassUtility.cs" />
     <Compile Include="TM_Command_Target.cs" />
     <Compile Include="TM_CopyAndLaunchProjectile.cs" />
+    <Compile Include="TMDefs\TM_GolemDef.cs" />
     <Compile Include="TM_CustomClassDef.cs" />
     <Compile Include="TM_CustomDef.cs" />
     <Compile Include="TM_CustomPowerDef.cs" />
@@ -578,6 +749,11 @@
     <Compile Include="Verb_BLOS.cs" />
     <Compile Include="Verb_Blur.cs" />
     <Compile Include="Verb_BowTraining.cs" />
+    <Compile Include="Verb_BrandFitness.cs" />
+    <Compile Include="Verb_BrandAwareness.cs" />
+    <Compile Include="Verb_BrandEmotion.cs" />
+    <Compile Include="Verb_BrandProtection.cs" />
+    <Compile Include="Verb_BrandVitality.cs" />
     <Compile Include="Verb_BriarPatch.cs" />
     <Compile Include="Verb_Buckshot.cs" />
     <Compile Include="Verb_BurningFury.cs" />
@@ -605,7 +781,22 @@
     <Compile Include="Verb_DismissPowerNode.cs" />
     <Compile Include="Verb_DismissSunlight.cs" />
     <Compile Include="Verb_DismissUndead.cs" />
+    <Compile Include="Verb_DispelLivingWall.cs" />
     <Compile Include="Verb_DispelEnchantWeapon.cs" />
+    <Compile Include="Verb_DispelBranding.cs" />
+    <Compile Include="Verb_BrandSiphon.cs" />
+    <Compile Include="Verb_FadeEmotions.cs" />
+    <Compile Include="Verb_MagicWardrobe.cs" />
+    <Compile Include="Verb_HeatShield.cs" />
+    <Compile Include="Verb_AlterStorm.cs" />
+    <Compile Include="Verb_Symbiosis.cs" />
+    <Compile Include="Verb_IncitePassion.cs" />
+    <Compile Include="Verb_MeleeSlam.cs" />
+    <Compile Include="Verb_SoothingBalm.cs" />
+    <Compile Include="Verb_LivingWall.cs" />
+    <Compile Include="Verb_Elixir.cs" />
+    <Compile Include="Verb_SigilDrain.cs" />
+    <Compile Include="Verb_SigilSurge.cs" />
     <Compile Include="Verb_DispelStoneskin.cs" />
     <Compile Include="Verb_Dominate.cs" />
     <Compile Include="Verb_EarthSprites.cs" />
@@ -684,6 +875,7 @@
     <Compile Include="Verb_SoL_Equalize.cs" />
     <Compile Include="Verb_SootheAnimal.cs" />
     <Compile Include="Verb_SoulBond.cs" />
+    <Compile Include="Verb_HarvestPassion.cs" />
     <Compile Include="Verb_SpellMending.cs" />
     <Compile Include="Verb_Sprint.cs" />
     <Compile Include="Verb_Stoneskin.cs" />
@@ -696,6 +888,7 @@
     <Compile Include="Verb_SummonTotemHealing.cs" />
     <Compile Include="Verb_SummonTotemLightning.cs" />
     <Compile Include="Verb_SuppressingFire.cs" />
+    <Compile Include="Verb_MindKiller.cs" />
     <Compile Include="Verb_Taunt.cs" />
     <Compile Include="Verb_Teach.cs" />
     <Compile Include="Verb_TechnoShield.cs" />
@@ -735,13 +928,16 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref">
-      <Version>1.3.3087</Version>
+      <Version>1.3.3287</Version>
     </PackageReference>
     <PackageReference Include="Lib.Harmony">
-      <Version>2.1.1</Version>
+      <Version>2.2.0</Version>
     </PackageReference>
     <PackageReference Include="Unity">
       <Version>5.11.10</Version>
+    </PackageReference>
+    <PackageReference Include="UnlimitedHugs.Rimworld.HugsLib">
+      <Version>9.0.1</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

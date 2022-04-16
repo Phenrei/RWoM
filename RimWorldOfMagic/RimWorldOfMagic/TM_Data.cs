@@ -40,6 +40,7 @@ namespace TorannMagic
             masterSpellList.Add(TorannMagicDefOf.SpellOf_Recall);
             masterSpellList.Add(TorannMagicDefOf.SpellOf_SpiritOfLight);
             masterSpellList.Add(TorannMagicDefOf.SpellOf_GuardianSpirit);
+            masterSpellList.Add(TorannMagicDefOf.SpellOf_LivingWall);
             return masterSpellList;
         }
 
@@ -60,6 +61,7 @@ namespace TorannMagic
                 restricted.Add(TorannMagicDefOf.SpellOf_FertileLands);
                 restricted.Add(TorannMagicDefOf.SpellOf_Firestorm);
                 restricted.Add(TorannMagicDefOf.SpellOf_FoldReality);
+                restricted.Add(TorannMagicDefOf.SpellOf_HeatShield);
                 restricted.Add(TorannMagicDefOf.SpellOf_HolyWrath);
                 restricted.Add(TorannMagicDefOf.SpellOf_LichForm);
                 restricted.Add(TorannMagicDefOf.SpellOf_MechaniteReprogramming);
@@ -80,7 +82,28 @@ namespace TorannMagic
                 restricted.Add(TorannMagicDefOf.SpellOf_GuardianSpirit);
                 restricted.Add(TorannMagicDefOf.SpellOf_Discord);
                 restricted.Add(TorannMagicDefOf.SpellOf_ShieldOther);
+                restricted.AddRange(RestrictedAbilitiesXML);
                 return restricted;
+            }
+        }
+
+        public static List<ThingDef> RestrictedAbilitiesXML
+        {
+            get
+            {
+                IEnumerable<TMAbilityDef> enumerable = from def in DefDatabase<TMAbilityDef>.AllDefs
+                                                   where (def.restrictedAbility)
+                                                   select def;
+                List<ThingDef> xmlRestrictedAbilities = new List<ThingDef>();
+                xmlRestrictedAbilities.Clear();
+                foreach(TMAbilityDef d in enumerable)
+                {
+                    if(d.restrictedAbility && d.learnItem != null)
+                    {
+                        xmlRestrictedAbilities.Add(d.learnItem);
+                    }
+                }
+                return xmlRestrictedAbilities.ToList();
             }
         }
 
@@ -176,6 +199,14 @@ namespace TorannMagic
                 magicTraits.Add(TorannMagicDefOf.TM_Wanderer);
                 magicTraits.Add(TorannMagicDefOf.TM_Brightmage);
                 magicTraits.Add(TorannMagicDefOf.TM_Shaman);
+                magicTraits.Add(TorannMagicDefOf.TM_Golemancer);
+                foreach (TMDefs.TM_CustomClass cc in TM_ClassUtility.CustomClasses())
+                {
+                    if (cc.isMage && !magicTraits.Contains(cc.classTrait))
+                    {
+                        magicTraits.Add(cc.classTrait);
+                    }
+                }
                 return magicTraits;
             }
         }
@@ -187,6 +218,7 @@ namespace TorannMagic
                 List<TraitDef> mightTraits = new List<TraitDef>();
                 mightTraits.Clear();
                 mightTraits.Add(TorannMagicDefOf.Bladedancer);
+                mightTraits.Add(TorannMagicDefOf.DeathKnight);
                 mightTraits.Add(TorannMagicDefOf.Gladiator);
                 mightTraits.Add(TorannMagicDefOf.Faceless);
                 mightTraits.Add(TorannMagicDefOf.TM_Sniper);
@@ -196,6 +228,13 @@ namespace TorannMagic
                 mightTraits.Add(TorannMagicDefOf.TM_Commander);
                 mightTraits.Add(TorannMagicDefOf.TM_SuperSoldier);
                 mightTraits.Add(TorannMagicDefOf.TM_Wayfarer);
+                foreach (TMDefs.TM_CustomClass cc in TM_ClassUtility.CustomClasses())
+                {
+                    if (cc.isFighter && !mightTraits.Contains(cc.classTrait))
+                    {
+                        mightTraits.Add(cc.classTrait);
+                    }
+                }
                 return mightTraits;
             }
         }
@@ -207,8 +246,8 @@ namespace TorannMagic
                 List<TraitDef> allClassTraits = new List<TraitDef>();
                 allClassTraits.Clear();
                 allClassTraits.AddRange(MightTraits);
-                allClassTraits.AddRange(MagicTraits);
-                allClassTraits.AddRange(TM_ClassUtility.CustomClassTraitDefs);
+                allClassTraits.AddRange(MagicTraits);                
+                //allClassTraits.AddRange(TM_ClassUtility.CustomClassTraitDefs);
                 return allClassTraits;
             }
         }
@@ -224,6 +263,19 @@ namespace TorannMagic
                 AllClassConflictTraits.Add(TorannMagicDefOf.PhysicalProdigy);
                 return allClassConflictTraits;
             }
+        }
+
+        public static List<TMAbilityDef> BrandList()
+        {
+            List<TMAbilityDef> tmpList = new List<TMAbilityDef>();
+            tmpList.Clear();
+            tmpList.Add(TorannMagicDefOf.TM_AwarenessBrand);
+            tmpList.Add(TorannMagicDefOf.TM_EmotionBrand);
+            tmpList.Add(TorannMagicDefOf.TM_FitnessBrand);
+            tmpList.Add(TorannMagicDefOf.TM_ProtectionBrand);
+            tmpList.Add(TorannMagicDefOf.TM_SiphonBrand);
+            tmpList.Add(TorannMagicDefOf.TM_VitalityBrand);
+            return tmpList;
         }
 
         public static List<ThingDef> MagicFociList()
@@ -246,6 +298,20 @@ namespace TorannMagic
                 }
             }
             return magicFocis;
+        }
+
+        public static List<string> CustomWeaponCategoryList(string listDefName)
+        {
+            List<string> customWeaponDefNames = new List<string>();
+            customWeaponDefNames.Clear();
+            IEnumerable<WeaponCategoryList> enumerable = from def in DefDatabase<WeaponCategoryList>.AllDefs
+                                                         where (def.defName == listDefName)
+                                                         select def;
+            foreach(WeaponCategoryList wcl in enumerable)
+            {
+                customWeaponDefNames.AddRange(wcl.weaponDefNames);
+            }
+            return customWeaponDefNames;
         }
 
         public static List<ThingDef> BowList()

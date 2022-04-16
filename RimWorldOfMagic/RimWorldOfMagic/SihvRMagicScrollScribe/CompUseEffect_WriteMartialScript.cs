@@ -17,12 +17,19 @@ namespace TorannMagic.SihvRMagicScrollScribe
             List<TMDefs.TM_CustomClass> cFighters = TM_ClassUtility.CustomFighterClasses;
             
             CompAbilityUserMight comp = user.TryGetComp<CompAbilityUserMight>();
-            if(parent.def != null && comp != null && comp.customClass != null)
+            if (parent.def != null && comp != null && user.IsSlave)
+            {
+                Messages.Message("TM_SlaveScribeFail".Translate(
+                        parent.def.label
+                    ), MessageTypeDefOf.RejectInput);
+                tempPod = null;
+            }
+            else if(parent.def != null && comp != null && comp.customClass != null)
             {
                 tempPod = comp.customClass.fullScript;
                 this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
             }
-            if (parent.def != null && user.story.traits.HasTrait(TorannMagicDefOf.Gladiator))
+            else if (parent.def != null && user.story.traits.HasTrait(TorannMagicDefOf.Gladiator))
             {
                 tempPod = ThingDef.Named("BookOfGladiator");
                 this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
@@ -207,21 +214,7 @@ namespace TorannMagic.SihvRMagicScrollScribe
             {
                 Messages.Message("NotPhyAdeptPawn".Translate(), MessageTypeDefOf.RejectInput);
             }
-            if (user.IsSlave)
-            {
-                if (Rand.Chance(.25f))
-                {
-                    Messages.Message("TM_SlaveScribeFail".Translate(
-                        tempPod.label,
-                        user.LabelShort
-                    ), MessageTypeDefOf.RejectInput);
-                    tempPod = null;
-                }
-                else
-                {
-                    tempPod = TM_Data.FighterBookList().RandomElement();
-                }
-            }
+            
             if (tempPod != null)
             {
                 SihvSpawnThings.SpawnThingDefOfCountAt(tempPod, 1, new TargetInfo(currentPos, map));

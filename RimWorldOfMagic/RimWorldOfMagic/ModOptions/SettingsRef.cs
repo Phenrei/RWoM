@@ -53,6 +53,11 @@ namespace TorannMagic.ModOptions
         public float autocastMinThreshold = Settings.Instance.autocastMinThreshold;
         public float autocastCombatMinThreshold = Settings.Instance.autocastCombatMinThreshold;
         public float autocastEvaluationFrequency = Settings.Instance.autocastEvaluationFrequency;
+        public bool autocastQueueing = Settings.Instance.autocastQueueing;
+
+        //golem options
+        public bool showDormantFrames = Settings.Instance.showDormantFrames;
+        public bool showGolemsOnColonistBar = Settings.Instance.showGolemsOnColonistBar;
 
         //Class options
         public bool Arcanist = Settings.Instance.Arcanist;
@@ -75,6 +80,8 @@ namespace TorannMagic.ModOptions
         public bool ChaosMage = Settings.Instance.ChaosMage;
         public bool Brightmage = Settings.Instance.Brightmage;
         public bool Shaman = Settings.Instance.Shaman;
+        public bool Golemancer = Settings.Instance.Golemancer;
+        public bool Empath = Settings.Instance.Empath;
 
         public bool Gladiator = Settings.Instance.Gladiator;
         public bool Bladedancer = Settings.Instance.Bladedancer;
@@ -88,10 +95,15 @@ namespace TorannMagic.ModOptions
         public bool Commander = Settings.Instance.Commander;
         public bool SuperSoldier = Settings.Instance.SuperSoldier;
         public bool Shadow = Settings.Instance.Shadow;
+        public bool Apothecary = Settings.Instance.Apothecary;
 
         public bool ArcaneConduit = Settings.Instance.ArcaneConduit;
         public bool ManaWell = Settings.Instance.ManaWell;
         public bool Boundless = Settings.Instance.Boundless;
+        public bool Enlightened = Settings.Instance.Enlightened;
+        public bool Cursed = Settings.Instance.Cursed;
+        public bool FaeBlood = Settings.Instance.FaeBlood;
+        public bool GiantsBlood = Settings.Instance.GiantsBlood;
 
         //faction settings
         public Dictionary<string, float> FactionFighterSettings = Settings.Instance.FactionFighterSettings;

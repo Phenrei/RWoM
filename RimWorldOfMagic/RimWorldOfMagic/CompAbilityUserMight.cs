@@ -218,7 +218,7 @@ namespace TorannMagic
                 if (shouldDrawPsionicShield)
                 {
                     float radius = 2.5f;
-                    radius = 2.5f + (.75f * TM_Calc.GetMightSkillLevel(this.Pawn, this.MightData.MightPowerSkill_PsionicBarrier, "TM_PsionicBarrier", "_ver", true));
+                    radius = 2.5f + (.75f * TM_Calc.GetSkillVersatilityLevel(Pawn, TorannMagicDefOf.TM_PsionicBarrier, false));//TM_Calc.GetMightSkillLevel(this.Pawn, this.MightData.MightPowerSkill_PsionicBarrier, "TM_PsionicBarrier", "_ver", true));
                     float drawRadius = radius * .23f;
                     float num = Mathf.Lerp(drawRadius, 9.5f, drawRadius);
                     Vector3 vector = this.Pawn.CurJob.targetA.CenterVector3;
@@ -260,6 +260,10 @@ namespace TorannMagic
                     if (this.customClass.classIconPath != "")
                     {
                         mat = MaterialPool.MatFrom("Other/" + this.customClass.classIconPath.ToString());
+                    }
+                    else if (this.customClass.classTexturePath != "")
+                    {
+                        mat = MaterialPool.MatFrom("Other/ClassTextures/" + this.customClass.classTexturePath, true);
                     }
                     if (this.customClass.classIconColor != null)
                     {
@@ -1032,7 +1036,7 @@ namespace TorannMagic
                             }
                         }
                         if (Find.TickManager.TicksGame % 60 == 0)
-                        {
+                        {                            
                             ResolveClassSkills();
                             //ResolveClassPassions(); currently disabled
                         }
@@ -1902,14 +1906,14 @@ namespace TorannMagic
                     this.RemovePawnAbility(TorannMagicDefOf.TM_BreachingCharge);
                     this.AddPawnAbility(TorannMagicDefOf.TM_BreachingCharge);
                 }
-                if (this.IsMightUser && this.MightData.MightPowersCustom != null && this.MightData.MightPowersCustom.Count > 0)
+                if (this.IsMightUser && this.MightData.MightPowersCustomAll != null && this.MightData.MightPowersCustomAll.Count > 0)
                 {
-                    for (int j = 0; j < this.MightData.MightPowersCustom.Count; j++)
+                    for (int j = 0; j < this.MightData.MightPowersCustomAll.Count; j++)
                     {
-                        if (this.MightData.MightPowersCustom[j].learned)
+                        if (this.MightData.MightPowersCustomAll[j].learned)
                         {
-                            this.RemovePawnAbility(this.MightData.MightPowersCustom[j].abilityDef);
-                            this.AddPawnAbility(this.MightData.MightPowersCustom[j].abilityDef);
+                            this.RemovePawnAbility(this.MightData.MightPowersCustomAll[j].abilityDef);
+                            this.AddPawnAbility(this.MightData.MightPowersCustomAll[j].abilityDef);
                         }
                     }
                 }
@@ -3378,16 +3382,16 @@ namespace TorannMagic
                 bool isCustom = this.customIndex >= 0;
                 if (this.Pawn.drafter != null && !this.Pawn.Drafted && this.Stamina != null && this.Stamina.CurLevelPercentage >= settingsRef.autocastMinThreshold)
                 {
-                    foreach (MightPower mp in this.MightData.MightPowersCustom)
+                    foreach (MightPower mp in this.MightData.MightPowersCustomAll)
                     {
+                        //Log.Message("checking custom power " + mp.abilityDef.defName);
                         if (mp.learned && mp.autocast && mp.autocasting != null && mp.autocasting.mightUser && mp.autocasting.undrafted)
                         {
-                            //try
-                            //{ 
                             TMAbilityDef tmad = mp.TMabilityDefs[mp.level] as TMAbilityDef; // issues with index?
+                            //Log.Message("checking autocast for ability " + tmad.defName);
                             bool canUseWithEquippedWeapon = true;
                             bool canUseIfViolentAbility = this.Pawn.story.DisabledWorkTagsBackstoryAndTraits.HasFlag(WorkTags.Violent) ? !tmad.MainVerb.isViolent : true;
-                            if (tmad.requiredWeaponsOrCategories != null && tmad.IsRestrictedByEquipment(this.Pawn))
+                            if (!TM_Calc.HasResourcesForAbility(this.Pawn, tmad))
                             {
                                 continue;
                             }
@@ -3400,7 +3404,7 @@ namespace TorannMagic
                                     if (localTarget != null && localTarget.IsValid)
                                     {
                                         Thing targetThing = localTarget.Thing;
-                                        if (!(targetThing.GetType() == mp.autocasting.GetTargetType))
+                                        if (!mp.autocasting.ValidType(mp.autocasting.GetTargetType, localTarget))
                                         {
                                             continue;
                                         }
@@ -3440,7 +3444,7 @@ namespace TorannMagic
                                     if (localTarget != null && localTarget.IsValid)
                                     {
                                         Pawn targetThing = localTarget.Pawn;
-                                        if (!(targetThing.GetType() == mp.autocasting.GetTargetType))
+                                        if (!mp.autocasting.ValidType(mp.autocasting.GetTargetType, localTarget))
                                         {
                                             continue;
                                         }
@@ -3457,7 +3461,7 @@ namespace TorannMagic
                                     if (localTarget != null && localTarget.IsValid)
                                     {
                                         IntVec3 targetThing = localTarget.Cell;
-                                        if (!(targetThing.GetType() == mp.autocasting.GetTargetType))
+                                        if (!mp.autocasting.ValidType(mp.autocasting.GetTargetType, localTarget))
                                         {
                                             continue;
                                         }
@@ -3478,12 +3482,13 @@ namespace TorannMagic
                                 }
                                 if(mp.autocasting.type == TMDefs.AutocastType.OnNearby)
                                 {
+                                    //Log.Message("nearby autocast for " + tmad.defName);
                                     LocalTargetInfo localTarget = TM_Calc.GetAutocastTarget(this.Pawn, mp.autocasting, this.Pawn.CurJob.targetA);
                                     if(localTarget != null && localTarget.IsValid)
                                     {
                                         Thing targetThing = localTarget.Thing;
-                                        if (!(targetThing.GetType() == mp.autocasting.GetTargetType))
-                                        {
+                                        if (!mp.autocasting.ValidType(mp.autocasting.GetTargetType, localTarget))
+                                        {                                            
                                             continue;
                                         }
                                         if (mp.autocasting.requiresLoS && !TM_Calc.HasLoSFromTo(this.Pawn.Position, targetThing, this.Pawn, mp.autocasting.minRange, ability.Def.MainVerb.range))
@@ -3491,7 +3496,7 @@ namespace TorannMagic
                                             continue;
                                         }
                                         if (mp.autocasting.maxRange != 0f && mp.autocasting.maxRange < (this.Pawn.Position - targetThing.Position).LengthHorizontal)
-                                        {
+                                        {                                            
                                             continue;
                                         }
                                         bool TE = mp.autocasting.targetEnemy && targetThing.Faction != null && targetThing.Faction.HostileTo(this.Pawn.Faction);
@@ -3506,11 +3511,11 @@ namespace TorannMagic
                                         bool TN = mp.autocasting.targetNeutral && (targetThing.Faction == null || !targetThing.Faction.HostileTo(this.Pawn.Faction));
                                         bool TF = mp.autocasting.targetFriendly && targetThing.Faction == this.Pawn.Faction;
                                         if (!(TE || TN || TF))
-                                        {
+                                        {                                            
                                             continue;
                                         }
                                         if (!mp.autocasting.ValidConditions(this.Pawn, targetThing))
-                                        {
+                                        {                                            
                                             continue;
                                         }
                                         AutoCast.CombatAbility_OnTarget.TryExecute(this, tmad, ability, mp, targetThing, mp.autocasting.minRange, out castSuccess);
@@ -3518,11 +3523,6 @@ namespace TorannMagic
                                 }
                                 if (castSuccess) goto AutoCastExit;
                             }
-                            //}
-                            //catch
-                            //{
-                            //    Log.Message("no index found at " + mp.level + " for " + mp.abilityDef.defName);
-                            //}
                         }
                     }
                     //Hunting only
@@ -3762,7 +3762,7 @@ namespace TorannMagic
                             TMAbilityDef tmad = mp.TMabilityDefs[mp.level] as TMAbilityDef; // issues with index?
                             bool canUseWithEquippedWeapon = true;
                             bool canUseIfViolentAbility = this.Pawn.story.DisabledWorkTagsBackstoryAndTraits.HasFlag(WorkTags.Violent) ? !tmad.MainVerb.isViolent : true;
-                            if (tmad.requiredWeaponsOrCategories != null && tmad.IsRestrictedByEquipment(this.Pawn))
+                            if (!TM_Calc.HasResourcesForAbility(this.Pawn, tmad))
                             {
                                 continue;
                             }
@@ -3775,7 +3775,7 @@ namespace TorannMagic
                                     if (localTarget != null && localTarget.IsValid)
                                     {
                                         Thing targetThing = localTarget.Thing;
-                                        if (!(targetThing.GetType() == mp.autocasting.GetTargetType))
+                                        if (!mp.autocasting.ValidType(mp.autocasting.GetTargetType, localTarget))
                                         {
                                             continue;
                                         }
@@ -3815,7 +3815,7 @@ namespace TorannMagic
                                     if (localTarget != null && localTarget.IsValid)
                                     {
                                         Pawn targetThing = localTarget.Pawn;
-                                        if (!(targetThing.GetType() == mp.autocasting.GetTargetType))
+                                        if (!mp.autocasting.ValidType(mp.autocasting.GetTargetType, localTarget))
                                         {
                                             continue;
                                         }
@@ -3832,7 +3832,7 @@ namespace TorannMagic
                                     if (localTarget != null && localTarget.IsValid)
                                     {
                                         IntVec3 targetThing = localTarget.Cell;
-                                        if (!(targetThing.GetType() == mp.autocasting.GetTargetType))
+                                        if (!mp.autocasting.ValidType(mp.autocasting.GetTargetType, localTarget))
                                         {
                                             continue;
                                         }
@@ -3857,7 +3857,7 @@ namespace TorannMagic
                                     if (localTarget != null && localTarget.IsValid)
                                     {
                                         Thing targetThing = localTarget.Thing;
-                                        if (!(targetThing.GetType() == mp.autocasting.GetTargetType))
+                                        if (!mp.autocasting.ValidType(mp.autocasting.GetTargetType, localTarget))
                                         {
                                             continue;
                                         }
@@ -4216,7 +4216,7 @@ namespace TorannMagic
                             TMAbilityDef tmad = mp.TMabilityDefs[mp.level] as TMAbilityDef; // issues with index?
                             bool canUseWithEquippedWeapon = true;
                             bool canUseIfViolentAbility = this.Pawn.story.DisabledWorkTagsBackstoryAndTraits.HasFlag(WorkTags.Violent) ? !tmad.MainVerb.isViolent : true;
-                            if (tmad.requiredWeaponsOrCategories != null && tmad.IsRestrictedByEquipment(this.Pawn))
+                            if (!TM_Calc.HasResourcesForAbility(this.Pawn, tmad))
                             {
                                 continue;
                             }
@@ -4229,7 +4229,7 @@ namespace TorannMagic
                                     if (localTarget != null && localTarget.IsValid)
                                     {
                                         Thing targetThing = localTarget.Thing;
-                                        if (!(targetThing.GetType() == mp.autocasting.GetTargetType))
+                                        if (!mp.autocasting.ValidType(mp.autocasting.GetTargetType, localTarget))
                                         {
                                             continue;
                                         }
@@ -4289,7 +4289,7 @@ namespace TorannMagic
                                     if (localTarget != null && localTarget.IsValid)
                                     {
                                         Pawn targetThing = localTarget.Pawn;
-                                        if (!(targetThing.GetType() == mp.autocasting.GetTargetType))
+                                        if (!mp.autocasting.ValidType(mp.autocasting.GetTargetType, localTarget))
                                         {
                                             continue;
                                         }
@@ -4306,7 +4306,7 @@ namespace TorannMagic
                                     if (localTarget != null && localTarget.IsValid)
                                     {
                                         IntVec3 targetThing = localTarget.Cell;
-                                        if (!(targetThing.GetType() == mp.autocasting.GetTargetType))
+                                        if (!mp.autocasting.ValidType(mp.autocasting.GetTargetType, localTarget))
                                         {
                                             continue;
                                         }
@@ -4331,7 +4331,7 @@ namespace TorannMagic
                                     if (localTarget != null && localTarget.IsValid)
                                     {
                                         Thing targetThing = localTarget.Thing;
-                                        if (!(targetThing.GetType() == mp.autocasting.GetTargetType))
+                                        if (!mp.autocasting.ValidType(mp.autocasting.GetTargetType, localTarget))
                                         {
                                             continue;
                                         }
@@ -4510,17 +4510,18 @@ namespace TorannMagic
                         HealthUtility.AdjustSeverity(this.Pawn, TorannMagicDefOf.TM_BladeArtHD, 4);
                     }
                 }
-                if ((this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Ranger) || (this.customClass != null && this.customClass.classFighterAbilities.Contains(TorannMagicDefOf.TM_BowTraining))) && !this.Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_BowTrainingHD))
-                {
+                if ((this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Ranger) || (this.customClass != null && this.customClass.classFighterAbilities.Contains(TorannMagicDefOf.TM_BowTraining))))
+                {                    
                     MightPowerSkill bowtraining_pwr = this.Pawn.GetComp<CompAbilityUserMight>().MightData.MightPowerSkill_BowTraining.FirstOrDefault((MightPowerSkill x) => x.label == "TM_BowTraining_pwr");
-
-                    //HealthUtility.AdjustSeverity(this.Pawn, TorannMagicDefOf.TM_BowTrainingHD, -5f);
-                    HealthUtility.AdjustSeverity(this.Pawn, TorannMagicDefOf.TM_BowTrainingHD, (.5f) + bowtraining_pwr.level);
-                    if (!this.Pawn.IsColonist && settingsRef.AIHardMode)
+                    if (!this.Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_BowTrainingHD))
                     {
-                        HealthUtility.AdjustSeverity(this.Pawn, TorannMagicDefOf.TM_BowTrainingHD, 4);
+                        //HealthUtility.AdjustSeverity(this.Pawn, TorannMagicDefOf.TM_BowTrainingHD, -5f);
+                        HealthUtility.AdjustSeverity(this.Pawn, TorannMagicDefOf.TM_BowTrainingHD, (.5f) + bowtraining_pwr.level);
+                        if (!this.Pawn.IsColonist && settingsRef.AIHardMode)
+                        {
+                            HealthUtility.AdjustSeverity(this.Pawn, TorannMagicDefOf.TM_BowTrainingHD, 4);
+                        }
                     }
-
                 }
 
                 using (IEnumerator<Hediff> enumerator = this.Pawn.health.hediffSet.GetHediffs<Hediff>().GetEnumerator())
@@ -4805,6 +4806,32 @@ namespace TorannMagic
                 }
             }
 
+            //Determine hediff adjustments
+            foreach (Hediff hd in this.Pawn.health.hediffSet.hediffs)
+            {
+                if (hd.def.GetModExtension<TMDefs.DefModExtension_HediffEnchantments>() != null)
+                {
+                    foreach (TMDefs.HediffEnchantment hdStage in hd.def.GetModExtension<TMDefs.DefModExtension_HediffEnchantments>().stages)
+                    {
+                        if (hd.Severity >= hdStage.minSeverity && hd.Severity < hdStage.maxSeverity)
+                        {
+                            TMDefs.DefModExtension_TraitEnchantments e = hdStage.enchantments;
+                            if (e != null)
+                            {
+                                _maxSP += e.maxSP;
+                                _spCost += e.spCost;
+                                _spRegenRate += e.spRegenRate;
+                                _coolDown += e.mightCooldown;
+                                _xpGain += e.xpGain;
+                                _arcaneRes += e.arcaneRes;
+                                _arcaneDmg += e.arcaneDmg;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
             //Determine apparel and equipment enchantments
             List<Apparel> apparel = this.Pawn.apparel.WornApparel;
             if (apparel != null)
@@ -4910,115 +4937,7 @@ namespace TorannMagic
                         _maxSPUpkeep += (ability.upkeepEnergyCost * (1f - (ability.upkeepEfficiencyPercent * level)));
                         _spRegenRateUpkeep += (ability.upkeepRegenCost * (1f - (ability.upkeepEfficiencyPercent * level)));
                         
-                    }
-                    else
-                    {
-                        //if (rec.def.defName == ("TM_HediffSprint"))
-                        //{
-                        //    MightPowerSkill eff = this.Pawn.GetComp<CompAbilityUserMight>().MightData.MightPowerSkill_Sprint.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Sprint_eff");
-                        //    _maxSP -= .3f * (1 - (.1f * eff.level));
-                        //    //Catch negative values
-                        //    if (this.maxSP < 0)
-                        //    {
-                        //        this.Pawn.health.RemoveHediff(rec);
-                        //        Log.Message("Removed " + rec.def.LabelCap + ", insufficient stamina to maintain.");
-                        //    }
-                        //}
-                        //if (rec.def.defName == "TM_HediffGearRepair")
-                        //{
-                        //    _maxSP -= .2f;
-                        //    //Catch negative values
-                        //    if (this.maxSP < 0)
-                        //    {
-                        //        this.Pawn.health.RemoveHediff(rec);
-                        //        Log.Message("Removed " + rec.def.LabelCap + ", insufficient stamina to maintain.");
-                        //    }
-                        //}
-                        //if (rec.def.defName == "TM_HediffInnerHealing")
-                        //{
-                        //    _maxSP -= .1f;
-                        //    //Catch negative values
-                        //    if (this.maxSP < 0)
-                        //    {
-                        //        this.Pawn.health.RemoveHediff(rec);
-                        //        Log.Message("Removed " + rec.def.LabelCap + ", insufficient stamina to maintain.");
-                        //    }
-                        //}
-                        //if (rec.def.defName == "TM_HediffHeavyBlow")
-                        //{
-                        //    _maxSP -= .3f;
-                        //    //Catch negative values
-                        //    if (this.maxSP < 0)
-                        //    {
-                        //        this.Pawn.health.RemoveHediff(rec);
-                        //        Log.Message("Removed " + rec.def.LabelCap + ", insufficient stamina to maintain.");
-                        //    }
-                        //}
-                        //if (rec.def.defName == "TM_HediffStrongBack")
-                        //{
-                        //    _maxSP -= .2f;
-                        //    //Catch negative values
-                        //    if (this.maxSP < 0)
-                        //    {
-                        //        this.Pawn.health.RemoveHediff(rec);
-                        //        Log.Message("Removed " + rec.def.LabelCap + ", insufficient stamina to maintain.");
-                        //    }
-                        //}
-                        //if (rec.def.defName == "TM_HediffThickSkin")
-                        //{
-                        //    _maxSP -= .3f;
-                        //    _spRegenRate -= .15f;
-                        //    //Catch negative values
-                        //    if (this.maxSP < 0)
-                        //    {
-                        //        this.Pawn.health.RemoveHediff(rec);
-                        //        Log.Message("Removed " + rec.def.LabelCap + ", insufficient stamina to maintain.");
-                        //    }
-                        //}
-                        //if (rec.def.defName == "TM_HediffFightersFocus")
-                        //{
-                        //    _maxSP -= .15f;
-                        //    //Catch negative values
-                        //    if (this.maxSP < 0)
-                        //    {
-                        //        this.Pawn.health.RemoveHediff(rec);
-                        //        Log.Message("Removed " + rec.def.LabelCap + ", insufficient stamina to maintain.");
-                        //    }
-                        //}
-                        //if (rec.def == TorannMagicDefOf.TM_ProvisionerAuraHD)
-                        //{
-                        //    _maxSP -= (.6f * (1f - (this.C_ProvisionerAura_eff * this.Pawn.GetComp<CompAbilityUserMight>().MightData.MightPowerSkill_ProvisionerAura.FirstOrDefault((MightPowerSkill x) => x.label == "TM_ProvisionerAura_eff").level)));
-                        //    //Catch negative values
-                        //    if (this.maxSP < 0)
-                        //    {
-                        //        this.Pawn.health.RemoveHediff(rec);
-                        //        MightData.MightPowersC.FirstOrDefault<MightPower>((MightPower x) => x.abilityDef == TorannMagicDefOf.TM_ProvisionerAura).AutoCast = false;
-                        //        Log.Message("Removed " + rec.def.LabelCap + ", insufficient stamina to maintain.");
-                        //    }
-                        //}
-                        //if (rec.def == TorannMagicDefOf.TM_TaskMasterAuraHD)
-                        //{
-                        //    _maxSP -= (.7f * (1f - (this.C_TaskMasterAura_eff * this.Pawn.GetComp<CompAbilityUserMight>().MightData.MightPowerSkill_TaskMasterAura.FirstOrDefault((MightPowerSkill x) => x.label == "TM_TaskMasterAura_eff").level)));
-                        //    //Catch negative values
-                        //    if (this.maxSP < 0)
-                        //    {
-                        //        this.Pawn.health.RemoveHediff(rec);
-                        //        Log.Message("Removed " + rec.def.LabelCap + ", insufficient stamina to maintain.");
-                        //        MightData.MightPowersC.FirstOrDefault<MightPower>((MightPower x) => x.abilityDef == TorannMagicDefOf.TM_TaskMasterAura).AutoCast = false;
-                        //    }
-                        //}
-                        //if (rec.def == TorannMagicDefOf.TM_CommanderAuraHD)
-                        //{
-                        //    _maxSP -= (.8f * (1f - (this.C_CommanderAura_eff * this.Pawn.GetComp<CompAbilityUserMight>().MightData.MightPowerSkill_CommanderAura.FirstOrDefault((MightPowerSkill x) => x.label == "TM_CommanderAura_eff").level)));
-                        //    //Catch negative values
-                        //    if (this.maxSP < 0)
-                        //    {
-                        //        this.Pawn.health.RemoveHediff(rec);
-                        //        MightData.MightPowersC.FirstOrDefault<MightPower>((MightPower x) => x.abilityDef == TorannMagicDefOf.TM_CommanderAura).AutoCast = false;
-                        //        Log.Message("Removed " + rec.def.LabelCap + ", insufficient stamina to maintain.");
-                        //    }
-                        //}
-                    }
+                    }                    
                     if(rec.def == TorannMagicDefOf.TM_SS_SerumHD)
                     {
                         _spRegenRate += (float)(.1f * rec.CurStageIndex);
